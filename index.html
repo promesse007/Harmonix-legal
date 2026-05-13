@@ -1,65 +1,77 @@
-// ========================================== //
-//       HARMONIX RESTO - MAIN SCRIPT         //
-// ========================================== //
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Harmonix Resto - Commande Rapide</title>
+    <style>
+        :root { --primary: #ff4500; --secondary: #2d3436; --light: #f9f9f9; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--light); margin: 0; padding: 20px; }
+        .header { background: var(--secondary); color: white; padding: 15px; text-align: center; border-radius: 10px; margin-bottom: 20px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center; }
+        .card img { width: 100%; border-radius: 8px; height: 150px; object-fit: cover; }
+        .btn-order { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; width: 100%; font-weight: bold; }
+        
+        /* Modal Paiement */
+        #payment-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; }
+        .modal-content { background: white; margin: 10% auto; padding: 20px; width: 90%; max-width: 400px; border-radius: 15px; text-align: center; }
+        .payment-methods { text-align: left; background: #eee; padding: 10px; border-radius: 8px; margin: 15px 0; }
+    </style>
+</head>
+<body>
 
-const products = [
-    { id: 1, title: "Thieboudienne Penda Mbaye", price: 2500, category: "Plat", emoji: "🍛", description: "Le classique sénégalais" },
-    { id: 2, title: "Yassa Poulet", price: 2000, category: "Plat", emoji: "🍗", description: "Poulet mariné aux oignons et citron" },
-    { id: 3, title: "Bissap Glacé", price: 500, category: "Boisson", emoji: "🥤", description: "Boisson rafraîchissante maison" }
-];
+    <div class="header">
+        <h1>🍱 HARMONIX RESTO</h1>
+        <p>Commandez vos plats préférés</p>
+    </div>
 
-let cart = [];
-
-// --- INITIALISATION ---
-document.addEventListener('DOMContentLoaded', () => {
-    renderProducts(products);
-    console.log("Resto Harmonix prêt !");
-});
-
-// --- AFFICHAGE DES PLATS ---
-function renderProducts(items) {
-    const grid = document.getElementById('productGrid');
-    if (!grid) return;
-    
-    grid.innerHTML = items.map(item => `
-        <div class="product-card">
-            <span>${item.emoji}</span>
-            <h3>${item.title}</h3>
-            <p>${item.description}</p>
-            <p><strong>${item.price} FCFA</strong></p>
-            <button onclick="openPaymentModal('${item.title}', ${item.price})">Commander</button>
+    <div class="grid">
+        <!-- Plat 1 -->
+        <div class="card">
+            <h3>Thieboudienne</h3>
+            <p>Le délice national au riz rouge.</p>
+            <p><strong>2500 FCFA</strong></p>
+            <button class="btn-order" onclick="showPayment('Thieboudienne', 2500)">COMMANDER</button>
         </div>
-    `).join('');
-}
-
-// --- SYSTÈME DE PAIEMENT (WAVE, ORANGE, MTN) ---
-function openPaymentModal(name, price) {
-    const paymentHTML = `
-        <div id="paymentModal" style="position:fixed; top:10%; left:10%; background:white; color:black; p:20px; border:2px solid #ff4500; z-index:1000; width:80%; padding: 20px;">
-            <h2>Confirmer la commande : ${name}</h2>
-            <p>Total à payer : <strong>${price} FCFA</strong></p>
-            <hr>
-            <p>Choisissez votre mode de paiement :</p>
-            <ul>
-                <li><strong>Wave / Orange Money :</strong> +221 XX XXX XX XX</li>
-                <li><strong>MTN / Airtel :</strong> +242 XX XXX XX XX</li>
-            </ul>
-            <p><em>Une fois le transfert effectué, envoyez le code de transaction ici :</em></p>
-            <input type="text" id="transID" placeholder="ID de transaction">
-            <button onclick="confirmOrder('${name}')">Valider ma commande</button>
-            <button onclick="document.getElementById('paymentModal').remove()">Annuler</button>
+        <!-- Plat 2 -->
+        <div class="card">
+            <h3>Poulet Yassa</h3>
+            <p>Poulet braisé, oignons et citron.</p>
+            <p><strong>2000 FCFA</strong></p>
+            <button class="btn-order" onclick="showPayment('Poulet Yassa', 2000)">COMMANDER</button>
         </div>
-    `;
-    document.body.insertAdjacentHTML('beforeend', paymentHTML);
-}
+    </div>
 
-function confirmOrder(itemName) {
-    const id = document.getElementById('transID').value;
-    if(id) {
-        alert("Merci ! Commande pour " + itemName + " reçue. ID : " + id);
-        document.getElementById('paymentModal').remove();
-        // Ici tu peux ajouter ton lien vers n8n pour recevoir une alerte Discord
-    } else {
-        alert("Veuillez entrer l'ID de la transaction.");
-    }
-}
+    <!-- Fenêtre de Paiement -->
+    <div id="payment-modal">
+        <div class="modal-content">
+            <h2>Paiement Sécurisé</h2>
+            <p id="order-info"></p>
+            <div class="payment-methods">
+                <p>💸 <strong>Wave / Orange Money :</strong> +221 77 XXX XX XX</p>
+                <p>📲 <strong>MTN / Airtel :</strong> +242 06 XXX XX XX</p>
+            </div>
+            <p>Entrez l'ID de transaction reçu par SMS :</p>
+            <input type="text" id="txn-id" placeholder="Ex: 12345678" style="width: 100%; padding: 10px; margin-bottom: 10px;">
+            <button class="btn-order" onclick="confirmPayment()">VALIDER LA COMMANDE</button>
+            <button onclick="closeModal()" style="margin-top: 10px; background: none; border: none; color: red; cursor: pointer;">Annuler</button>
+        </div>
+    </div>
+
+    <script>
+        function showPayment(name, price) {
+            document.getElementById('order-info').innerText = "Total pour " + name + " : " + price + " FCFA";
+            document.getElementById('payment-modal').style.display = 'block';
+        }
+        function closeModal() { document.getElementById('payment-modal').style.display = 'none'; }
+        function confirmPayment() {
+            const id = document.getElementById('txn-id').value;
+            if(id) {
+                alert("Paiement enregistré ! Votre commande est en cours de préparation.");
+                closeModal();
+            } else { alert("Veuillez entrer l'ID de transaction."); }
+        }
+    </script>
+</body>
+</html>
