@@ -1,305 +1,354 @@
 <?php
 // =========================================================================
-// CONFIGURATION GLOBALE - CHEZ MADAME OLIVIA (SERVICE TRAITEUR)
+// CONFIGURATION DE LA MARQUE - CHEZ MADAME OLIVIA V2 (FÉMININE)
 // =========================================================================
-// Remplis ici tes vraies coordonnées de redirection :
-$whatsapp_number = "24206XXXXXX"; // Format international sans le '+' (Ex: 242... pour le Congo)
+$whatsapp_number = "24206XXXXXX"; // Ton numéro Congo Brazza sans le '+'
 $tiktok_profile  = "https://www.tiktok.com/@madameoliviatraiteur";
 $facebook_page   = "https://www.facebook.com/madameoliviatraiteur";
 $instagram_link  = "https://www.instagram.com/madameoliviatraiteur";
-
-// Sécurisation basique des entrées en cas de soumission POST
-$order_submitted = false;
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $client_name = filter_input(INPUT_POST, 'client_name', FILTER_SANITIZE_STRING);
-    $client_phone = filter_input(INPUT_POST, 'client_phone', FILTER_SANITIZE_STRING);
-    $client_country = filter_input(INPUT_POST, 'client_country', FILTER_SANITIZE_STRING);
-    $order_payload = filter_input(INPUT_POST, 'order_payload', FILTER_SANITIZE_STRING);
-    $channel = filter_input(INPUT_POST, 'social_channel', FILTER_SANITIZE_STRING);
-    $order_submitted = true;
-}
 ?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chez Madame Olivia | Traiteur Authentique Congo-Brazzaville</title>
+    <title>Chez Madame Olivia | Haute Gastronomie du Congo-Brazzaville</title>
     <style>
         :root {
-            --primary: #d4af37;
-            --secondary: #ff9f1c;
-            --bg-dark: #0b0b0e;
-            --card-bg: #141419;
-            --text: #f5f5f7;
-            --success: #25d366;
+            --rose-gold: #b53b54;
+            --cream: #fff9f6;
+            --gold: #e5a93b;
+            --charcoal: #3d241d;
+            --white: #ffffff;
         }
         body {
-            background-color: var(--bg-dark);
-            color: var(--text);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--cream);
+            color: var(--charcoal);
+            font-family: 'Georgia', 'Times New Roman', serif; /* Plus élégant et littéraire */
             margin: 0;
-            padding: 20px;
+            padding: 15px;
         }
         .container {
-            max-width: 900px;
+            max-width: 800px;
             margin: 0 auto;
         }
         .brand-header {
             text-align: center;
-            padding: 30px;
-            border: 1px solid var(--primary);
-            border-radius: 12px;
-            background: linear-gradient(135deg, #111116 0%, #070709 100%);
-            margin-bottom: 30px;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, #fff0e6 0%, #ffe3d1 100%);
+            border-radius: 20px;
+            border: 1px solid #ffd1b3;
+            margin-bottom: 35px;
+            box-shadow: 0 4px 15px rgba(181, 59, 84, 0.05);
+        }
+        .avatar-chef {
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            border: 3px solid var(--gold);
+            object-fit: cover;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
         .brand-header h2 {
-            color: var(--primary);
-            margin: 0;
-            font-size: 28px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
+            color: var(--rose-gold);
+            margin: 5px 0;
+            font-size: 32px;
+            font-family: 'Times New Roman', serif;
+            letter-spacing: 1px;
         }
-        .menu-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 20px;
+        .story-intro {
+            font-size: 16px;
+            line-height: 1.6;
+            max-width: 600px;
+            margin: 15px auto 0 auto;
+            color: #5c4037;
+            font-style: italic;
+        }
+        .section-title {
+            color: var(--rose-gold);
+            text-align: center;
+            font-size: 24px;
             margin-bottom: 30px;
+            position: relative;
+        }
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 2px;
+            background-color: var(--gold);
+            margin: 8px auto 0 auto;
+        }
+        .menu-list {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            margin-bottom: 40px;
         }
         .dish-card {
-            background: var(--card-bg);
-            border-radius: 10px;
-            border: 1px solid #222;
+            background: var(--white);
+            border-radius: 15px;
+            border: 1px solid #ffe3d1;
             overflow: hidden;
-            transition: all 0.3s ease;
-            padding: 15px;
-        }
-        .dish-card:hover {
-            border-color: var(--secondary);
-            transform: translateY(-2px);
-        }
-        .dish-img-placeholder {
-            height: 160px;
-            background: linear-gradient(45deg, #1f1f26, #2d2d3a);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.02);
             display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 8px;
-            margin-bottom: 12px;
-            color: var(--primary);
-            font-weight: bold;
-            font-size: 14px;
-            text-align: center;
-            border: 1px dashed #444;
+            flex-direction: column;
+        }
+        @media(min-width: 600px) {
+            .dish-card { flex-direction: row; }
+        }
+        .dish-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        @media(min-width: 600px) {
+            .dish-image { width: 250px; height: auto; min-height: 220px; }
+        }
+        .dish-content {
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .dish-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 10px;
         }
         .dish-title {
+            font-size: 20px;
+            color: var(--rose-gold);
+            margin: 0;
+            font-weight: bold;
+        }
+        .dish-price {
             font-size: 18px;
-            color: #fff;
-            margin: 5px 0;
-            font-weight: 600;
+            color: var(--gold);
+            font-weight: bold;
+            font-family: Arial, sans-serif;
         }
-        .dish-desc {
-            font-size: 13px;
-            color: #aaa;
-            height: 45px;
-            margin-bottom: 10px;
-            line-height: 1.3;
+        .dish-story {
+            font-size: 14.5px;
+            line-height: 1.5;
+            color: #555;
+            margin-bottom: 15px;
+            text-align: justify;
         }
-        .qty-controls {
+        .taste-badge {
+            display: inline-block;
+            background: #fff0e6;
+            color: var(--rose-gold);
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            border: 1px solid #ffe3d1;
+        }
+        .qty-wrapper {
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            margin-top: 15px;
-            background: #1c1c24;
-            padding: 5px 10px;
-            border-radius: 6px;
+            justify-content: flex-end;
+            gap: 12px;
         }
         .qty-btn {
-            background: var(--primary);
+            background: var(--rose-gold);
             border: none;
-            color: #000;
-            font-weight: bold;
-            width: 32px;
-            height: 32px;
-            border-radius: 4px;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
             cursor: pointer;
             font-size: 16px;
+            font-weight: bold;
         }
         .qty-val {
             font-size: 16px;
             font-weight: bold;
-            width: 40px;
+            width: 25px;
             text-align: center;
+            font-family: Arial, sans-serif;
         }
-        .cart-section {
-            background: var(--card-bg);
-            border: 1px solid var(--primary);
-            border-radius: 12px;
-            padding: 25px;
-            margin-top: 30px;
+        .order-box {
+            background: var(--white);
+            border: 2px solid var(--rose-gold);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 25px rgba(181, 59, 84, 0.05);
         }
-        .form-group {
-            margin-bottom: 15px;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: var(--primary);
-            font-size: 14px;
-            font-weight: 600;
+        .order-box h3 {
+            color: var(--rose-gold);
+            margin-top: 0;
+            font-size: 22px;
+            text-align: center;
         }
         .form-control {
             width: 100%;
             padding: 12px;
-            background: #1a1a22;
-            border: 1px solid #333;
-            border-radius: 6px;
-            color: #fff;
-            font-size: 14px;
+            background: var(--cream);
+            border: 1px solid #ffe3d1;
+            border-radius: 8px;
+            color: var(--charcoal);
+            font-size: 15px;
+            margin-bottom: 15px;
             box-sizing: border-box;
+            font-family: inherit;
         }
         .form-control:focus {
-            border-color: var(--secondary);
+            border-color: var(--rose-gold);
             outline: none;
         }
-        .channel-selector {
+        .channel-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            grid-template-columns: repeat(2, 1fr);
             gap: 10px;
             margin: 20px 0;
         }
-        .channel-btn {
-            padding: 12px 5px;
-            border: 1px solid #333;
-            border-radius: 6px;
+        .channel-card {
+            padding: 12px;
+            border: 1px solid #ffe3d1;
+            border-radius: 8px;
             text-align: center;
             cursor: pointer;
             font-weight: bold;
-            font-size: 12px;
-            background: #1c1c24;
-            transition: 0.2s;
+            font-size: 13px;
+            background: var(--cream);
+            color: var(--charcoal);
+            font-family: Arial, sans-serif;
         }
-        .channel-btn.active {
-            border-color: var(--secondary);
-            background: linear-gradient(135deg, #ff9f1c 0%, #d4af37 100%);
-            color: #000;
+        .channel-card.active {
+            background: var(--rose-gold);
+            color: white;
+            border-color: var(--rose-gold);
         }
         .submit-btn {
             width: 100%;
             padding: 16px;
-            background: linear-gradient(90deg, #d4af37, #ff9f1c);
+            background: linear-gradient(90deg, var(--rose-gold), #d94b68);
             border: none;
-            color: #000;
+            color: white;
             font-size: 18px;
             font-weight: bold;
-            border-radius: 6px;
+            border-radius: 8px;
             cursor: pointer;
             text-transform: uppercase;
             letter-spacing: 1px;
-        }
-        .submit-btn:hover {
-            opacity: 0.9;
+            box-shadow: 0 4px 10px rgba(181, 59, 84, 0.2);
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="brand-header">
-            <h2>Chez Madame Olivia</h2>
-            <p style="color: var(--secondary); margin: 5px 0 0 0; font-style: italic; font-size: 15px;">L'Art Culinaire sans Compromis - Spécialités du Congo-Brazzaville</p>
-        </div>
-
-        <h3 style="color: var(--primary); border-bottom: 1px solid #222; padding-bottom: 8px; font-weight: 400;">Sélectionnez vos spécialités (Devis sur mesure)</h3>
         
-        <div class="menu-grid">
-            <div class="dish-card" data-id="saka_saka">
-                <div class="dish-img-placeholder">🍲 SAKA-SAKA TRADITIONNEL</div>
-                <div class="dish-title">Saka-Saka National</div>
-                <div class="dish-desc">Feuilles de manioc pilées minutieusement, cuites à l'huile de palme et poisson fumé.</div>
-                <div class="qty-controls">
-                    <button type="button" class="qty-btn" onclick="updateQty('saka_saka', -1)">-</button>
-                    <span id="qty_saka_saka" class="qty-val">0</span>
-                    <button type="button" class="qty-btn" onclick="updateQty('saka_saka', 1)">+</button>
+        <div class="brand-header">
+            <img src="https://images.unsplash.com/photo-1577219491135-ce391730fb2c?w=400" class="avatar-chef" alt="Madame Olivia">
+            <h2>Chez Madame Olivia</h2>
+            <div style="width: 80px; height: 3px; background: linear-gradient(90deg, #009643, #ffd100, #dc241f); margin: 10px auto;"></div>
+            <p class="story-intro">
+                "Bienvenue dans mon univers secret. Chez nous, chaque marmite raconte l'histoire, la tendresse et la richesse de notre beau Congo-Brazzaville. Laissez-vous guider par les saveurs de l'enfance et l'art de recevoir."
+            </p>
+        </div>
+
+        <h3 class="section-title">Le Carnet de nos Douces Saveurs</h3>
+        
+        <div class="menu-list">
+            <div class="dish-card">
+                <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500" class="dish-image" alt="Saka-Saka">
+                <div class="dish-content">
+                    <div>
+                        <div class="dish-header">
+                            <h4 class="dish-title">L'Authentique Saka-Saka National</h4>
+                            <span class="dish-price">15.000 FCFA</span>
+                        </div>
+                        <div class="taste-badge">✨ Saveur : Riche, Onctueuse & Traditionnelle</div>
+                        <p class="dish-story">
+                            Notre Saka-Saka est un hommage aux mamas de Brazzaville. Les feuilles de manioc sont sélectionnées avec soin, pilées avec patience à la main, puis mijotées pendant de longues heures à l'huile de palme pure. Rehaussé au poisson fumé et aux secrets de la maison, c'est le roi de nos tables de fête.
+                        </p>
+                    </div>
+                    <div class="qty-wrapper">
+                        <button type="button" class="qty-btn" onclick="updateQty('saka_saka', -1)">-</button>
+                        <span id="qty_saka_saka" class="qty-val">0</span>
+                        <button type="button" class="qty-btn" onclick="updateQty('saka_saka', 1)">+</button>
+                    </div>
                 </div>
             </div>
 
-            <div class="dish-card" data-id="maboke">
-                <div class="dish-img-placeholder">🐟 MABOKÉ EN FEUILLES</div>
-                <div class="dish-title">Le Maboké Traditionnel</div>
-                <div class="dish-desc">Poisson frais étouffé sous les braises dans des feuilles de bananier avec ses épices locales.</div>
-                <div class="qty-controls">
-                    <button type="button" class="qty-btn" onclick="updateQty('maboke', -1)">-</button>
-                    <span id="qty_maboke" class="qty-val">0</span>
-                    <button type="button" class="qty-btn" onclick="updateQty('maboke', 1)">+</button>
+            <div class="dish-card">
+                <img src="https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=500" class="dish-image" alt="Maboké">
+                <div class="dish-content">
+                    <div>
+                        <div class="dish-header">
+                            <h4 class="dish-title">Le Maboké de Poisson du Fleuve</h4>
+                            <span class="dish-price">12.500 FCFA</span>
+                        </div>
+                        <div class="taste-badge">🍃 Saveur : Épicée, Parfumée & Cuit à l'étouffée</div>
+                        <p class="dish-story">
+                            Une cuisson ancestrale à l'étouffée. Le poisson frais est mariné dans un mélange subtil de piment doux, d'ail frais et d'épices de la forêt, puis enveloppé délicatement dans de tendres feuilles de bananier avant de rencontrer la douceur de la braise. Une chair fondante qui exhale des arômes boisés uniques.
+                        </p>
+                    </div>
+                    <div class="qty-wrapper">
+                        <button type="button" class="qty-btn" onclick="updateQty('maboke', -1)">-</button>
+                        <span id="qty_maboke" class="qty-val">0</span>
+                        <button type="button" class="qty-btn" onclick="updateQty('maboke', 1)">+</button>
+                    </div>
                 </div>
             </div>
 
-            <div class="dish-card" data-id="grillades">
-                <div class="dish-img-placeholder">🔥 GRILLADES & KAMUNDELE</div>
-                <div class="dish-title">Grillades & Côtelettes</div>
-                <div class="dish-desc">Brochettes de viande tendres (Kamundele) et côtelettes braisées assaisonnées à la perfection.</div>
-                <div class="qty-controls">
-                    <button type="button" class="qty-btn" onclick="updateQty('grillades', -1)">-</button>
-                    <span id="qty_grillades" class="qty-val">0</span>
-                    <button type="button" class="qty-btn" onclick="updateQty('grillades', 1)">+</button>
-                </div>
-            </div>
-
-            <div class="dish-card" data-id="ndagala">
-                <div class="dish-img-placeholder">🍤 NDAGALA CRISPY & FUFU</div>
-                <div class="dish-title">Ndagala Croustillant</div>
-                <div class="dish-desc">Petits poissons frits et dorés, servis chauds avec fufu de manioc ou bananes pesées.</div>
-                <div class="qty-controls">
-                    <button type="button" class="qty-btn" onclick="updateQty('ndagala', -1)">-</button>
-                    <span id="qty_ndagala" class="qty-val">0</span>
-                    <button type="button" class="qty-btn" onclick="updateQty('ndagala', 1)">+</button>
+            <div class="dish-card">
+                <img src="https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=500" class="dish-image" alt="Grillades">
+                <div class="dish-content">
+                    <div>
+                        <div class="dish-header">
+                            <h4 class="dish-title">Les Kamundele & Côtelettes d'Or</h4>
+                            <span class="dish-price">8.500 FCFA</span>
+                        </div>
+                        <div class="taste-badge">🔥 Saveur : Fumée, Grillée & Succulente</div>
+                        <p class="dish-story">
+                            Le secret de nos grillades réside dans le temps de repos de la viande. Nos morceaux choisis de viande et de côtelettes d'agneau s'imprègnent d'une marinade signature pendant 24 heures avant d'être saisis au feu de bois. À la fois croustillants à l'extérieur et incroyablement juteux à cœur.
+                        </p>
+                    </div>
+                    <div class="qty-wrapper">
+                        <button type="button" class="qty-btn" onclick="updateQty('grillades', -1)">-</button>
+                        <span id="qty_grillades" class="qty-val">0</span>
+                        <button type="button" class="qty-btn" onclick="updateQty('grillades', 1)">+</button>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="cart-section">
-            <h3 style="color: var(--secondary); margin-top: 0; font-weight: 500;">Finaliser ma Demande Traiteur</h3>
-            
+        <div class="order-box">
+            <h3>Placer une demande d'enchantement culinaire</h3>
             <form id="mainOrderForm" method="POST" action="" onsubmit="return processOrder(event);">
                 <input type="hidden" id="order_payload" name="order_payload">
                 <input type="hidden" id="social_channel" name="social_channel" value="whatsapp">
 
-                <div class="form-group">
-                    <label for="client_name">Votre Nom Complet</label>
-                    <input type="text" id="client_name" name="client_name" class="form-control" placeholder="Ex: Rodrigue" required>
+                <input type="text" id="client_name" name="client_name" class="form-control" placeholder="Votre Nom Nom et Prénom" required>
+                <input type="tel" id="client_phone" name="client_phone" class="form-control" placeholder="Votre Numéro WhatsApp" required>
+                <input type="text" id="client_country" name="client_country" class="form-control" placeholder="Votre Ville et Quartier de Livraison" required>
+
+                <p style="font-size: 14px; font-weight: bold; color: var(--rose-gold); margin-bottom: 5px;">Choisir votre canal d'envoi :</p>
+                <div class="channel-grid">
+                    <div class="channel-card active" id="btn_whatsapp" onclick="setChannel('whatsapp')">WhatsApp</div>
+                    <div class="channel-card" id="btn_tiktok" onclick="setChannel('tiktok')">TikTok</div>
+                    <div class="channel-card" id="btn_facebook" onclick="setChannel('facebook')">Facebook</div>
+                    <div class="channel-card" id="btn_instagram" onclick="setChannel('instagram')">Instagram</div>
                 </div>
 
-                <div class="form-group">
-                    <label for="client_phone">Numéro WhatsApp Réseau Actif</label>
-                    <input type="tel" id="client_phone" name="client_phone" class="form-control" placeholder="Ex: +242 06 600 0000" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="client_country">Ville / Pays de Livraison</label>
-                    <input type="text" id="client_country" name="client_country" class="form-control" placeholder="Ex: Brazzaville / Dakar" required>
-                </div>
-
-                <label style="color: var(--primary); font-size: 14px; font-weight: 600;">Envoyer et valider la commande sur :</label>
-                <div class="channel-selector">
-                    <div class="channel-btn active" id="btn_whatsapp" onclick="setChannel('whatsapp')">🟢 WHATSAPP</div>
-                    <div class="channel-btn" id="btn_tiktok" onclick="setChannel('tiktok')">⚫ TIKTOK</div>
-                    <div class="channel-btn" id="btn_facebook" onclick="setChannel('facebook')">🔵 FACEBOOK</div>
-                    <div class="channel-btn" id="btn_instagram" onclick="setChannel('instagram')">🟣 INSTAGRAM</div>
-                </div>
-
-                <button type="submit" class="submit-btn">Transmettre la commande</button>
+                <button type="submit" class="submit-btn">Envoyer ma commande</button>
             </form>
         </div>
     </div>
 
     <script>
-        // État du panier d'achat
-        const cart = { saka_saka: 0, maboke: 0, grillades: 0, ndagala: 0 };
+        const cart = { saka_saka: 0, maboke: 0, grillades: 0 };
         const itemsInfo = {
             saka_saka: "Saka-Saka National Congolais",
-            maboke: "Maboké de Poisson traditionnel",
-            grillades: "Sélection Grillades & Kamundele",
-            ndagala: "Ndagala Croustillant avec Accompagnement"
+            maboke: "Maboké de Poisson du Fleuve",
+            grillades: "Kamundele & Côtelettes d'Or"
         };
 
         function updateQty(id, delta) {
@@ -309,23 +358,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         function setChannel(channel) {
             document.getElementById('social_channel').value = channel;
-            document.querySelectorAll('.channel-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.channel-card').forEach(btn => btn.classList.remove('active'));
             document.getElementById('btn_' + channel).classList.add('active');
         }
 
         function processOrder(e) {
             let itemsText = "";
             let totalItems = 0;
-            
             for (const [key, value] of Object.entries(cart)) {
                 if (value > 0) {
-                    itemsText += `• ${itemsInfo[key]} : (Quantité : ${value})\n`;
+                    itemsText += `• ${itemsInfo[key]} (Qté : ${value})\n`;
                     totalItems += value;
                 }
             }
 
             if (totalItems === 0) {
-                alert("Votre panier est vide. Veuillez ajouter au moins une spécialité avant d'envoyer.");
+                alert("Votre panier est vide chers gourmands ! Choisissez une saveur.");
                 return false;
             }
 
@@ -334,37 +382,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             const country = document.getElementById('client_country').value;
             const channel = document.getElementById('social_channel').value;
 
-            // Construction du payload textuel formaté
-            let textMessage = `Bonjour *Chez Madame Olivia*,\n\n`;
-            textMessage += `Je souhaite effectuer une commande traiteur sur mesure :\n\n`;
-            textMessage += `*PROFIL CLIENT*\n`;
-            textMessage += `- Nom : ${name}\n`;
-            textMessage += `- Contact : ${phone}\n`;
-            textMessage += `- Destination : ${country}\n\n`;
-            textMessage += `*MENU CONGOLAIS SÉLECTIONNÉ*\n${itemsText}\n`;
-            textMessage += `Merci de m'indiquer la disponibilité et les modalités pour le dépôt de paiement (Mobile Money/Wave).`;
+            let textMessage = `✨ *COMMANDE TRAITEUR - CHEZ MADAME OLIVIA* ✨\n\n`;
+            textMessage += `Une âme gourmande a hâte de goûter vos plats :\n\n`;
+            textMessage += `👤 *CLIENT* :\n`;
+            textMessage += `• Nom : ${name}\n`;
+            textMessage += `• Mobile : ${phone}\n`;
+            textMessage += `• Adresse de Livraison : ${country}\n\n`;
+            textMessage += `🍲 *SAVEURS CONGOLAISES SÉLECTIONNÉES* :\n${itemsText}\n`;
+            textMessage += `Merci de me confirmer la prise en compte pour l'envoi du dépôt financier !`;
 
             document.getElementById('order_payload').value = textMessage;
             const encodedText = encodeURIComponent(textMessage);
             let targetUrl = "";
 
-            // Routage intelligent vers les API ou profils
             if (channel === 'whatsapp') {
                 targetUrl = `https://api.whatsapp.com/send?phone=<?php echo $whatsapp_number; ?>&text=${encodedText}`;
-            } else if (channel === 'tiktok') {
-                targetUrl = `<?php echo $tiktok_profile; ?>`;
-            } else if (channel === 'facebook') {
-                targetUrl = `<?php echo $facebook_page; ?>`;
-            } else if (channel === 'instagram') {
-                targetUrl = `<?php echo $instagram_link; ?>`;
-            }
+            } else if (channel === 'tiktok') { targetUrl = `<?php echo $tiktok_profile; ?>`;
+            } else if (channel === 'facebook') { targetUrl = `<?php echo $facebook_page; ?>`;
+            } else if (channel === 'instagram') { targetUrl = `<?php echo $instagram_link; ?>`; }
 
-            if (targetUrl !== "") {
-                window.open(targetUrl, '_blank');
-            }
+            if (targetUrl !== "") { window.open(targetUrl, '_blank'); }
             return true;
         }
     </script>
 </body>
 </html>
-
