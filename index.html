@@ -1,77 +1,370 @@
+<?php
+// =========================================================================
+// CONFIGURATION GLOBALE - CHEZ MADAME OLIVIA (SERVICE TRAITEUR)
+// =========================================================================
+// Remplis ici tes vraies coordonnées de redirection :
+$whatsapp_number = "24206XXXXXX"; // Format international sans le '+' (Ex: 242... pour le Congo)
+$tiktok_profile  = "https://www.tiktok.com/@madameoliviatraiteur";
+$facebook_page   = "https://www.facebook.com/madameoliviatraiteur";
+$instagram_link  = "https://www.instagram.com/madameoliviatraiteur";
+
+// Sécurisation basique des entrées en cas de soumission POST
+$order_submitted = false;
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $client_name = filter_input(INPUT_POST, 'client_name', FILTER_SANITIZE_STRING);
+    $client_phone = filter_input(INPUT_POST, 'client_phone', FILTER_SANITIZE_STRING);
+    $client_country = filter_input(INPUT_POST, 'client_country', FILTER_SANITIZE_STRING);
+    $order_payload = filter_input(INPUT_POST, 'order_payload', FILTER_SANITIZE_STRING);
+    $channel = filter_input(INPUT_POST, 'social_channel', FILTER_SANITIZE_STRING);
+    $order_submitted = true;
+}
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Harmonix Resto - Commande Rapide</title>
+    <title>Chez Madame Olivia | Traiteur Authentique Congo-Brazzaville</title>
     <style>
-        :root { --primary: #ff4500; --secondary: #2d3436; --light: #f9f9f9; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--light); margin: 0; padding: 20px; }
-        .header { background: var(--secondary); color: white; padding: 15px; text-align: center; border-radius: 10px; margin-bottom: 20px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
-        .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center; }
-        .card img { width: 100%; border-radius: 8px; height: 150px; object-fit: cover; }
-        .btn-order { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; width: 100%; font-weight: bold; }
-        
-        /* Modal Paiement */
-        #payment-modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; }
-        .modal-content { background: white; margin: 10% auto; padding: 20px; width: 90%; max-width: 400px; border-radius: 15px; text-align: center; }
-        .payment-methods { text-align: left; background: #eee; padding: 10px; border-radius: 8px; margin: 15px 0; }
+        :root {
+            --primary: #d4af37;
+            --secondary: #ff9f1c;
+            --bg-dark: #0b0b0e;
+            --card-bg: #141419;
+            --text: #f5f5f7;
+            --success: #25d366;
+        }
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .brand-header {
+            text-align: center;
+            padding: 30px;
+            border: 1px solid var(--primary);
+            border-radius: 12px;
+            background: linear-gradient(135deg, #111116 0%, #070709 100%);
+            margin-bottom: 30px;
+        }
+        .brand-header h2 {
+            color: var(--primary);
+            margin: 0;
+            font-size: 28px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .dish-card {
+            background: var(--card-bg);
+            border-radius: 10px;
+            border: 1px solid #222;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            padding: 15px;
+        }
+        .dish-card:hover {
+            border-color: var(--secondary);
+            transform: translateY(-2px);
+        }
+        .dish-img-placeholder {
+            height: 160px;
+            background: linear-gradient(45deg, #1f1f26, #2d2d3a);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            color: var(--primary);
+            font-weight: bold;
+            font-size: 14px;
+            text-align: center;
+            border: 1px dashed #444;
+        }
+        .dish-title {
+            font-size: 18px;
+            color: #fff;
+            margin: 5px 0;
+            font-weight: 600;
+        }
+        .dish-desc {
+            font-size: 13px;
+            color: #aaa;
+            height: 45px;
+            margin-bottom: 10px;
+            line-height: 1.3;
+        }
+        .qty-controls {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 15px;
+            background: #1c1c24;
+            padding: 5px 10px;
+            border-radius: 6px;
+        }
+        .qty-btn {
+            background: var(--primary);
+            border: none;
+            color: #000;
+            font-weight: bold;
+            width: 32px;
+            height: 32px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .qty-val {
+            font-size: 16px;
+            font-weight: bold;
+            width: 40px;
+            text-align: center;
+        }
+        .cart-section {
+            background: var(--card-bg);
+            border: 1px solid var(--primary);
+            border-radius: 12px;
+            padding: 25px;
+            margin-top: 30px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--primary);
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            background: #1a1a22;
+            border: 1px solid #333;
+            border-radius: 6px;
+            color: #fff;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        .form-control:focus {
+            border-color: var(--secondary);
+            outline: none;
+        }
+        .channel-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .channel-btn {
+            padding: 12px 5px;
+            border: 1px solid #333;
+            border-radius: 6px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 12px;
+            background: #1c1c24;
+            transition: 0.2s;
+        }
+        .channel-btn.active {
+            border-color: var(--secondary);
+            background: linear-gradient(135deg, #ff9f1c 0%, #d4af37 100%);
+            color: #000;
+        }
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(90deg, #d4af37, #ff9f1c);
+            border: none;
+            color: #000;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .submit-btn:hover {
+            opacity: 0.9;
+        }
     </style>
 </head>
 <body>
-
-    <div class="header">
-        <h1>🍱 HARMONIX RESTO</h1>
-        <p>Commandez vos plats préférés</p>
-    </div>
-
-    <div class="grid">
-        <!-- Plat 1 -->
-        <div class="card">
-            <h3>Thieboudienne</h3>
-            <p>Le délice national au riz rouge.</p>
-            <p><strong>2500 FCFA</strong></p>
-            <button class="btn-order" onclick="showPayment('Thieboudienne', 2500)">COMMANDER</button>
+    <div class="container">
+        <div class="brand-header">
+            <h2>Chez Madame Olivia</h2>
+            <p style="color: var(--secondary); margin: 5px 0 0 0; font-style: italic; font-size: 15px;">L'Art Culinaire sans Compromis - Spécialités du Congo-Brazzaville</p>
         </div>
-        <!-- Plat 2 -->
-        <div class="card">
-            <h3>Poulet Yassa</h3>
-            <p>Poulet braisé, oignons et citron.</p>
-            <p><strong>2000 FCFA</strong></p>
-            <button class="btn-order" onclick="showPayment('Poulet Yassa', 2000)">COMMANDER</button>
-        </div>
-    </div>
 
-    <!-- Fenêtre de Paiement -->
-    <div id="payment-modal">
-        <div class="modal-content">
-            <h2>Paiement Sécurisé</h2>
-            <p id="order-info"></p>
-            <div class="payment-methods">
-                <p>💸 <strong>Wave / Orange Money :</strong> +221 77 XXX XX XX</p>
-                <p>📲 <strong>MTN / Airtel :</strong> +242 06 XXX XX XX</p>
+        <h3 style="color: var(--primary); border-bottom: 1px solid #222; padding-bottom: 8px; font-weight: 400;">Sélectionnez vos spécialités (Devis sur mesure)</h3>
+        
+        <div class="menu-grid">
+            <div class="dish-card" data-id="saka_saka">
+                <div class="dish-img-placeholder">🍲 SAKA-SAKA TRADITIONNEL</div>
+                <div class="dish-title">Saka-Saka National</div>
+                <div class="dish-desc">Feuilles de manioc pilées minutieusement, cuites à l'huile de palme et poisson fumé.</div>
+                <div class="qty-controls">
+                    <button type="button" class="qty-btn" onclick="updateQty('saka_saka', -1)">-</button>
+                    <span id="qty_saka_saka" class="qty-val">0</span>
+                    <button type="button" class="qty-btn" onclick="updateQty('saka_saka', 1)">+</button>
+                </div>
             </div>
-            <p>Entrez l'ID de transaction reçu par SMS :</p>
-            <input type="text" id="txn-id" placeholder="Ex: 12345678" style="width: 100%; padding: 10px; margin-bottom: 10px;">
-            <button class="btn-order" onclick="confirmPayment()">VALIDER LA COMMANDE</button>
-            <button onclick="closeModal()" style="margin-top: 10px; background: none; border: none; color: red; cursor: pointer;">Annuler</button>
+
+            <div class="dish-card" data-id="maboke">
+                <div class="dish-img-placeholder">🐟 MABOKÉ EN FEUILLES</div>
+                <div class="dish-title">Le Maboké Traditionnel</div>
+                <div class="dish-desc">Poisson frais étouffé sous les braises dans des feuilles de bananier avec ses épices locales.</div>
+                <div class="qty-controls">
+                    <button type="button" class="qty-btn" onclick="updateQty('maboke', -1)">-</button>
+                    <span id="qty_maboke" class="qty-val">0</span>
+                    <button type="button" class="qty-btn" onclick="updateQty('maboke', 1)">+</button>
+                </div>
+            </div>
+
+            <div class="dish-card" data-id="grillades">
+                <div class="dish-img-placeholder">🔥 GRILLADES & KAMUNDELE</div>
+                <div class="dish-title">Grillades & Côtelettes</div>
+                <div class="dish-desc">Brochettes de viande tendres (Kamundele) et côtelettes braisées assaisonnées à la perfection.</div>
+                <div class="qty-controls">
+                    <button type="button" class="qty-btn" onclick="updateQty('grillades', -1)">-</button>
+                    <span id="qty_grillades" class="qty-val">0</span>
+                    <button type="button" class="qty-btn" onclick="updateQty('grillades', 1)">+</button>
+                </div>
+            </div>
+
+            <div class="dish-card" data-id="ndagala">
+                <div class="dish-img-placeholder">🍤 NDAGALA CRISPY & FUFU</div>
+                <div class="dish-title">Ndagala Croustillant</div>
+                <div class="dish-desc">Petits poissons frits et dorés, servis chauds avec fufu de manioc ou bananes pesées.</div>
+                <div class="qty-controls">
+                    <button type="button" class="qty-btn" onclick="updateQty('ndagala', -1)">-</button>
+                    <span id="qty_ndagala" class="qty-val">0</span>
+                    <button type="button" class="qty-btn" onclick="updateQty('ndagala', 1)">+</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="cart-section">
+            <h3 style="color: var(--secondary); margin-top: 0; font-weight: 500;">Finaliser ma Demande Traiteur</h3>
+            
+            <form id="mainOrderForm" method="POST" action="" onsubmit="return processOrder(event);">
+                <input type="hidden" id="order_payload" name="order_payload">
+                <input type="hidden" id="social_channel" name="social_channel" value="whatsapp">
+
+                <div class="form-group">
+                    <label for="client_name">Votre Nom Complet</label>
+                    <input type="text" id="client_name" name="client_name" class="form-control" placeholder="Ex: Rodrigue" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="client_phone">Numéro WhatsApp Réseau Actif</label>
+                    <input type="tel" id="client_phone" name="client_phone" class="form-control" placeholder="Ex: +242 06 600 0000" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="client_country">Ville / Pays de Livraison</label>
+                    <input type="text" id="client_country" name="client_country" class="form-control" placeholder="Ex: Brazzaville / Dakar" required>
+                </div>
+
+                <label style="color: var(--primary); font-size: 14px; font-weight: 600;">Envoyer et valider la commande sur :</label>
+                <div class="channel-selector">
+                    <div class="channel-btn active" id="btn_whatsapp" onclick="setChannel('whatsapp')">🟢 WHATSAPP</div>
+                    <div class="channel-btn" id="btn_tiktok" onclick="setChannel('tiktok')">⚫ TIKTOK</div>
+                    <div class="channel-btn" id="btn_facebook" onclick="setChannel('facebook')">🔵 FACEBOOK</div>
+                    <div class="channel-btn" id="btn_instagram" onclick="setChannel('instagram')">🟣 INSTAGRAM</div>
+                </div>
+
+                <button type="submit" class="submit-btn">Transmettre la commande</button>
+            </form>
         </div>
     </div>
 
     <script>
-        function showPayment(name, price) {
-            document.getElementById('order-info').innerText = "Total pour " + name + " : " + price + " FCFA";
-            document.getElementById('payment-modal').style.display = 'block';
+        // État du panier d'achat
+        const cart = { saka_saka: 0, maboke: 0, grillades: 0, ndagala: 0 };
+        const itemsInfo = {
+            saka_saka: "Saka-Saka National Congolais",
+            maboke: "Maboké de Poisson traditionnel",
+            grillades: "Sélection Grillades & Kamundele",
+            ndagala: "Ndagala Croustillant avec Accompagnement"
+        };
+
+        function updateQty(id, delta) {
+            cart[id] = Math.max(0, cart[id] + delta);
+            document.getElementById('qty_' + id).innerText = cart[id];
         }
-        function closeModal() { document.getElementById('payment-modal').style.display = 'none'; }
-        function confirmPayment() {
-            const id = document.getElementById('txn-id').value;
-            if(id) {
-                alert("Paiement enregistré ! Votre commande est en cours de préparation.");
-                closeModal();
-            } else { alert("Veuillez entrer l'ID de transaction."); }
+
+        function setChannel(channel) {
+            document.getElementById('social_channel').value = channel;
+            document.querySelectorAll('.channel-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('btn_' + channel).classList.add('active');
+        }
+
+        function processOrder(e) {
+            let itemsText = "";
+            let totalItems = 0;
+            
+            for (const [key, value] of Object.entries(cart)) {
+                if (value > 0) {
+                    itemsText += `• ${itemsInfo[key]} : (Quantité : ${value})\n`;
+                    totalItems += value;
+                }
+            }
+
+            if (totalItems === 0) {
+                alert("Votre panier est vide. Veuillez ajouter au moins une spécialité avant d'envoyer.");
+                return false;
+            }
+
+            const name = document.getElementById('client_name').value;
+            const phone = document.getElementById('client_phone').value;
+            const country = document.getElementById('client_country').value;
+            const channel = document.getElementById('social_channel').value;
+
+            // Construction du payload textuel formaté
+            let textMessage = `Bonjour *Chez Madame Olivia*,\n\n`;
+            textMessage += `Je souhaite effectuer une commande traiteur sur mesure :\n\n`;
+            textMessage += `*PROFIL CLIENT*\n`;
+            textMessage += `- Nom : ${name}\n`;
+            textMessage += `- Contact : ${phone}\n`;
+            textMessage += `- Destination : ${country}\n\n`;
+            textMessage += `*MENU CONGOLAIS SÉLECTIONNÉ*\n${itemsText}\n`;
+            textMessage += `Merci de m'indiquer la disponibilité et les modalités pour le dépôt de paiement (Mobile Money/Wave).`;
+
+            document.getElementById('order_payload').value = textMessage;
+            const encodedText = encodeURIComponent(textMessage);
+            let targetUrl = "";
+
+            // Routage intelligent vers les API ou profils
+            if (channel === 'whatsapp') {
+                targetUrl = `https://api.whatsapp.com/send?phone=<?php echo $whatsapp_number; ?>&text=${encodedText}`;
+            } else if (channel === 'tiktok') {
+                targetUrl = `<?php echo $tiktok_profile; ?>`;
+            } else if (channel === 'facebook') {
+                targetUrl = `<?php echo $facebook_page; ?>`;
+            } else if (channel === 'instagram') {
+                targetUrl = `<?php echo $instagram_link; ?>`;
+            }
+
+            if (targetUrl !== "") {
+                window.open(targetUrl, '_blank');
+            }
+            return true;
         }
     </script>
 </body>
 </html>
+
