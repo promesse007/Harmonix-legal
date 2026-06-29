@@ -3,147 +3,261 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Présentation de presley</title>
+    <title>Portfolio Professionnel - Presley</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --accent: #10b981;
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Plus Jakarta Sans', sans-serif;
         }
 
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            background: var(--bg-gradient);
             min-height: 100vh;
-            color: #333;
-            padding: 20px;
-        }
-
-        .card {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            width: 100%;
-            max-width: 450px;
-            overflow: hidden;
-            text-align: center;
-            padding: 30px;
-        }
-
-        .profile-img {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            background-color: #ddd;
-            margin: 0 auto 20px;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 40px;
-            color: #764ba2;
-            border: 4px solid #667eea;
+            color: var(--text-main);
+            padding: 40px 20px;
+            overflow-x: hidden;
         }
 
-        .name {
-            font-size: 24px;
-            font-weight: bold;
-            color: #2d3748;
-            margin-bottom: 5px;
-        }
-
-        .title {
-            font-size: 16px;
-            color: #764ba2;
-            font-weight: 600;
-            margin-bottom: 20px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .bio {
-            font-size: 14px;
-            color: #718096;
-            line-height: 1.6;
-            margin-bottom: 25px;
-        }
-
-        .info-table {
+        /* Conteneur Principal (Effet Glassmorphism de Maître) */
+        .profile-container {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
             width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 25px;
-            text-align: left;
+            max-width: 550px;
+            padding: 40px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            position: relative;
+            transition: transform 0.3s ease;
+        }
+
+        .profile-container:hover {
+            transform: translateY(-5px);
+        }
+
+        /* En-tête : Image de profil */
+        .avatar-wrapper {
+            position: relative;
+            width: 140px;
+            height: 140px;
+            margin: 0 auto 25px;
+        }
+
+        .avatar-image {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--primary);
+            box-shadow: 0 0 20px rgba(79, 70, 229, 0.4);
+        }
+
+        .status-badge {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            width: 20px;
+            height: 20px;
+            background-color: var(--accent);
+            border: 3px solid #1e1b4b;
+            border-radius: 50%;
+        }
+
+        /* Typographie et Identité */
+        .profile-name {
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            margin-bottom: 8px;
+            background: linear-gradient(to right, #ffffff, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: capitalize;
+        }
+
+        .profile-role {
             font-size: 14px;
+            font-weight: 600;
+            color: #a5b4fc;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 25px;
         }
 
-        .info-table td {
-            padding: 10px;
-            border-bottom: 1px solid #edf2f7;
+        /* Section Informations Structurées (Grille Moderne) */
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+            margin-bottom: 35px;
+            text-align: left;
         }
 
-        .info-table td.label {
-            font-weight: bold;
-            color: #4a5568;
-            width: 35%;
+        .info-item {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            padding: 16px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            transition: background 0.2s;
         }
 
-        .btn-contact {
-            display: inline-block;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        .info-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .info-icon {
+            font-size: 18px;
+            color: #818cf8;
+            margin-right: 16px;
+            width: 24px;
+            text-align: center;
+        }
+
+        .info-content .info-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 2px;
+        }
+
+        .info-content .info-value {
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        /* Zone d'actions / Boutons */
+        .actions-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        /* Bouton Connexion avec Google officiel */
+        .btn-google {
+            background: #ffffff;
+            color: #1f2937;
+            border: none;
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-google:hover {
+            background: #f3f4f6;
+            transform: scale(1.01);
+        }
+
+        .btn-google svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Bouton Contact Classique */
+        .btn-primary {
+            background: var(--primary);
             color: white;
-            padding: 12px 30px;
-            border-radius: 25px;
+            border: none;
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
             text-decoration: none;
-            font-weight: bold;
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: background 0.2s;
         }
 
-        .btn-contact:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(118, 75, 162, 0.4);
+        .btn-primary:hover {
+            background: var(--primary-hover);
         }
     </style>
 </head>
 <body>
 
-    <div class="card">
-        <!-- Avatar / Photo -->
-        <div class="profile-img">👤</div>
-        
-        <!-- Identité -->
-        <div class="name">presley</div>
-        <div class="title">Développeur & Créateur de Contenu</div>
-        
-        <!-- Petite biographie -->
-        <p class="bio">
-            Passionné par la technologie et le design, j'aide les entreprises et les particuliers à donner vie à leurs idées à travers des solutions numériques élégantes.
-        </p>
-        
-        <!-- Informations structurées -->
-        <table class="info-table">
-            <tr>
-                <td class="label">Âge :</td>
-                <td>28 ans</td>
-            </tr>
-            <tr>
-                <td class="label">Localisation :</td>
-                <td>Dakar, senegal</td>
-            </tr>
-            <tr>
-                <td class="label">Email :</td>
-                <td>presleyngombolo@email.com</td>
-            </tr>
-            <tr>
-                <td class="label">Spécialité :</td>
-                <td>Design UI/UX, HTML/CSS</td>
-            </tr>
-        </table>
-        
-        <!-- Bouton d'action -->
-        <a href="presleyexauce@email.com" class="btn-contact">Me Contacter</a>
+    <div class="profile-container">
+        <div class="avatar-wrapper">
+            <img src="photo-de-presley.jpg" alt="Presley" class="avatar-image" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80'">
+            <div class="status-badge"></div>
+        </div>
+
+        <h1 class="profile-name">presley</h1>
+        <p class="profile-role">Développeur & Designer</p>
+
+        <div class="info-grid">
+            <div class="info-item">
+                <i class="fa-solid fa-location-dot info-icon"></i>
+                <div class="info-content">
+                    <p class="info-label">Localisation</p>
+                    <p class="info-value">Dakar, Sénégal</p>
+                </div>
+            </div>
+            
+            <div class="info-item">
+                <i class="fa-solid fa-envelope info-icon"></i>
+                <div class="info-content">
+                    <p class="info-label">Email Professionnel</p>
+                    <p class="info-value">presleyngombolo@email.com</p>
+                </div>
+            </div>
+
+            <div class="info-item">
+                <i class="fa-solid fa-code info-icon"></i>
+                <div class="info-content">
+                    <p class="info-label">Spécialisation</p>
+                    <p class="info-value">Full-Stack Architecture & UI/UX</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="actions-group">
+            <button class="btn-google" onclick="loginWithGoogle()">
+                <svg viewBox="0 0 24 24">
+                    <path fill="#EA4335" d="M12.24 10.285V14.4h6.887c-.275 1.565-1.88 4.604-6.887 4.604-4.33 0-7.866-3.577-7.866-8s3.536-8 7.866-8c2.46 0 4.105 1.025 5.047 1.926l3.227-3.107C18.422 2.21 15.613 1 12.24 1 6.133 1 1.18 5.923 1.18 12s4.953 11 11.06 11c6.375 0 10.615-4.436 10.615-10.706 0-.72-.077-1.27-.172-1.709H12.24z"/>
+                </svg>
+                Se connecter avec mon compte Google
+            </button>
+            
+            <a href="mailto:presleyngombolo@email.com" class="btn-primary">Envoyer un message direct</a>
+        </div>
     </div>
 
+    <script>
+        // Fonction pour simuler la connexion avec le compte
+        function loginWithGoogle() {
+            alert("Connexion en cours avec ton compte Google...\n(Ici, on connecte l'API Firebase ou Google Identity pour récupérer tes informations réelles !)");
+            // C'est ici qu'on insère le script d'authentification officiel (OAuth2)
+        }
+    </script>
 </body>
 </html>
