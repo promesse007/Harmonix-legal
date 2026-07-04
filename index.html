@@ -3,63 +3,30 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Smart Budget Africa - Planificateur de Budget</title>
+    <title>Smart Budget Africa - Planificateur Pro</title>
+    <!-- Tailwind CSS pour un design moderne -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <style>
-        * {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-        }
-        body {
-            background: #0A0E1A;
-        }
+        * { font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background: #0A0E1A; color: #FFFFFF; }
         .glass-card {
             background: rgba(17, 24, 39, 0.7);
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
             border: 1px solid rgba(55, 65, 81, 0.4);
         }
-        .gradient-border {
-            border-image: linear-gradient(135deg, #3b82f6, #8b5cf6) 1;
-        }
         input[type="number"]::-webkit-inner-spin-button,
-        input[type="number"]::-webkit-outer-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-        input[type="number"] {
-            -moz-appearance: textfield;
-        }
-        ::-webkit-scrollbar {
-            width: 4px;
-            height: 4px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #1e293b;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #3b82f6;
-            border-radius: 10px;
-        }
-        .fade-in {
-            animation: fadeIn 0.3s ease-out forwards;
-        }
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(6px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+        input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type="number"] { -moz-appearance: textfield; }
+        .fade-in { animation: fadeIn 0.3s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-    <!-- HEADER -->
-    <header class="sticky top-0 z-50 glass-card px-6 py-3 flex flex-wrap justify-between items-center gap-3 border-b border-gray-800/50">
+    <!-- HEADER WITH REAL-TIME DATE & GEO -->
+    <header class="sticky top-0 z-50 glass-card px-6 py-4 flex flex-wrap justify-between items-center gap-4 border-b border-gray-800/50">
         <div class="flex items-center gap-3">
             <div class="bg-gradient-to-br from-blue-600 to-indigo-600 p-2.5 rounded-xl shadow-lg shadow-blue-500/20">
                 <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -68,53 +35,52 @@
             </div>
             <div>
                 <h1 class="text-xl font-extrabold tracking-tight text-white">Smart Budget Africa <span class="text-blue-500">Pro</span></h1>
-                <p class="text-[11px] text-gray-400 font-medium uppercase tracking-wider">Planification Universelle · Simulation de Vie</p>
+                <p id="live-clock" class="text-[11px] text-emerald-400 font-mono uppercase tracking-wider">Chargement de la date...</p>
             </div>
         </div>
 
         <div class="flex items-center gap-3 bg-[#1E293B] p-1.5 rounded-xl border border-gray-700/60 text-xs">
-            <span id="auto-geo" class="text-gray-400 font-medium px-2">📍 Détection...</span>
+            <span id="auto-geo" class="text-gray-400 font-medium px-2">📍 Détection de la zone...</span>
             <div class="w-px h-5 bg-gray-700"></div>
             <select id="currency-select" onchange="calculateAll()" class="bg-transparent font-bold text-blue-400 outline-none cursor-pointer pr-1">
                 <option value="FCFA" class="bg-[#1E293B]">FCFA</option>
-                <option value="$" class="bg-[#1E293B]">USD</option>
-                <option value="€" class="bg-[#1E293B]">EUR</option>
-                <option value="£" class="bg-[#1E293B]">GBP</option>
+                <option value="$" class="bg-[#1E293B]">USD ($)</option>
+                <option value="€" class="bg-[#1E293B]">EUR (€)</option>
             </select>
         </div>
     </header>
 
     <main class="max-w-7xl mx-auto px-4 py-6 space-y-6">
 
-        <!-- ÉTAPE 1 : REVENUS -->
+        <!-- ETAPE 1 : REVENUS -->
         <section class="glass-card rounded-2xl p-6 shadow-xl border border-gray-800/40">
             <h2 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2 mb-4">
-                <span class="w-1.5 h-5 bg-emerald-500 rounded-full"></span> Étape 1 · Revenus (Réels ou Estimés)
+                <span class="w-1.5 h-5 bg-emerald-500 rounded-full"></span> Étape 1 · Vos Revenus Globaux
             </h2>
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                 <div>
-                    <label class="block text-xs font-semibold text-gray-400 mb-1.5">Salaire / Bourse (mensuel)</label>
+                    <label class="block text-xs font-semibold text-gray-400 mb-1.5">Salaire / Bourse Mensuel</label>
                     <div class="relative">
                         <input type="number" id="inc-base-mois" oninput="calculateAll()" placeholder="0" class="w-full bg-[#1E293B] border border-gray-700 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/60" />
                         <span class="absolute right-3 top-2.5 text-xs text-gray-500 font-bold lbl-currency">FCFA</span>
                     </div>
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-gray-400 mb-1.5">Gains quotidiens</label>
+                    <label class="block text-xs font-semibold text-gray-400 mb-1.5">Gains / Activités par Jour</label>
                     <div class="relative">
                         <input type="number" id="inc-add-jour" oninput="calculateAll()" placeholder="0" class="w-full bg-[#1E293B] border border-gray-700 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/60" />
                         <span class="absolute right-3 top-2.5 text-xs text-gray-500 font-bold lbl-currency">FCFA</span>
                     </div>
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-gray-400 mb-1.5">Gains hebdomadaires</label>
+                    <label class="block text-xs font-semibold text-gray-400 mb-1.5">Gains par Semaine</label>
                     <div class="relative">
                         <input type="number" id="inc-add-sem" oninput="calculateAll()" placeholder="0" class="w-full bg-[#1E293B] border border-gray-700 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/60" />
                         <span class="absolute right-3 top-2.5 text-xs text-gray-500 font-bold lbl-currency">FCFA</span>
                     </div>
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-gray-400 mb-1.5">Gains mensuels extra</label>
+                    <label class="block text-xs font-semibold text-gray-400 mb-1.5">Autres Revenus Mensuels</label>
                     <div class="relative">
                         <input type="number" id="inc-add-mois" oninput="calculateAll()" placeholder="0" class="w-full bg-[#1E293B] border border-gray-700 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/60" />
                         <span class="absolute right-3 top-2.5 text-xs text-gray-500 font-bold lbl-currency">FCFA</span>
@@ -126,36 +92,36 @@
         <!-- CORPS PRINCIPAL -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-            <!-- ÉTAPE 2 : DÉPENSES -->
+            <!-- CONFIGURATEUR DE DÉPENSES -->
             <aside class="lg:col-span-1 glass-card rounded-2xl p-5 shadow-xl border border-gray-800/40 space-y-4">
-                <div class="flex justify-between items-center">
-                    <h2 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                        <span class="w-1.5 h-5 bg-rose-500 rounded-full"></span> Étape 2 · Dépenses
-                    </h2>
-                    <span class="text-[10px] bg-rose-500/20 text-rose-300 font-bold px-2.5 py-0.5 rounded-full">Intelligent</span>
-                </div>
+                <h2 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                    <span class="w-1.5 h-5 bg-rose-500 rounded-full"></span> Étape 2 · Ajouter une Dépense
+                </h2>
 
-                <div class="space-y-3 max-h-[480px] overflow-y-auto pr-1">
-                    <!-- Catégorie -->
+                <div class="space-y-3">
                     <div>
-                        <label class="block text-xs font-semibold text-gray-400 mb-1">Catégorie</label>
-                        <select id="exp-category" class="w-full bg-[#1E293B] border border-gray-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:ring-2 focus:ring-blue-500/60">
-                            <option value="🏠 Logement & Loyer">🏠 Logement & Loyer</option>
-                            <option value="⚡ Électricité / Eau">⚡ Électricité / Eau</option>
-                            <option value="🚗 Carburant / Transport">🚗 Carburant / Transport</option>
-                            <option value="🌐 Internet / Abonnements">🌐 Internet / Abonnements</option>
-                            <option value="📚 Scolarité / Fournitures">📚 Scolarité / Fournitures</option>
-                            <option value="🛒 Nourriture / Stock">🛒 Nourriture / Stock</option>
-                            <option value="🩺 Santé / Pharmacie">🩺 Santé / Pharmacie</option>
+                        <label class="block text-xs font-semibold text-gray-400 mb-1">Sélectionner un Poste précis</label>
+                        <select id="exp-category" class="w-full bg-[#1E293B] border border-gray-700 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:ring-2 focus:ring-blue-500/60">
+                            <!-- Catégories détaillées demandées -->
+                            <option value="🏠 Logement & Loyer">🏠 Logement / Loyer</option>
+                            <option value="⚡ Électricité">⚡ Électricité</option>
+                            <option value="💧 Eau Courante">💧 Eau Courante</option>
+                            <option value="🚗 Carburant">🚗 Carburant</option>
+                            <option value="🚌 Transport / Taxi">🚌 Transport / Taxis</option>
+                            <option value="🌐 Internet / Wi-Fi">🌐 Connexion Internet / Wi-Fi</option>
+                            <option value="📺 Abonnement Canal+ / TV">📺 Abonnement Canal+ / TV</option>
+                            <option value="📚 Scolarité & Fournitures">📚 Scolarité & Fournitures</option>
+                            <option value="🛒 Nourriture, Stock & Prévisions">🛒 Nourriture, Stock & Prévisions</option>
+                            <option value="🩺 Santé & Pharmacie">🩺 Santé & Pharmacie</option>
                             <option value="🛡️ Assurances">🛡️ Assurances</option>
-                            <option value="🖤 Famille / Soutien">🖤 Famille / Soutien</option>
-                            <option value="🎉 Loisirs / Plaisirs">🎉 Loisirs / Plaisirs</option>
-                            <option value="📊 Impôts / Taxes">📊 Impôts / Taxes</option>
-                            <option value="🚨 Imprévus / Urgences">🚨 Imprévus / Urgences</option>
+                            <option value="🖤 Soutien Familial">🖤 Soutien Familial (Famille)</option>
+                            <option value="🎉 Loisirs & Plaisirs">🎉 Loisirs & Plaisirs</option>
+                            <option value="📊 Impôts & Taxes">📊 Impôts & Taxes</option>
+                            <option value="🚨 Imprévus & Urgences">🚨 Imprévus & Urgences</option>
+                            <option value="📂 Autre Poste">📂 Autre (Poste personnalisé)</option>
                         </select>
                     </div>
 
-                    <!-- Montant + Fréquence -->
                     <div class="grid grid-cols-2 gap-2">
                         <div>
                             <label class="block text-xs font-semibold text-gray-400 mb-1">Montant</label>
@@ -171,73 +137,70 @@
                         </div>
                     </div>
 
-                    <!-- Détails -->
                     <div>
-                        <label class="block text-xs font-semibold text-gray-400 mb-1">Description</label>
-                        <input type="text" id="exp-details" placeholder="Ex: Loyer, Essence..." class="w-full bg-[#1E293B] border border-gray-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:ring-2 focus:ring-blue-500/60" />
+                        <label class="block text-xs font-semibold text-gray-400 mb-1">Note explicative (optionnel)</label>
+                        <input type="text" id="exp-details" placeholder="Ex: Facture CIE, abonnement mensuel..." class="w-full bg-[#1E293B] border border-gray-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:ring-2 focus:ring-blue-500/60" />
                     </div>
 
-                    <!-- Bouton Ajouter -->
                     <button onclick="addExpense()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold py-2.5 rounded-xl text-xs transition-all shadow-md shadow-blue-600/20">
-                        + Enregistrer la dépense
+                        + Enregistrer dans le bilan
                     </button>
 
-                    <!-- Catégorie personnalisée -->
                     <div class="pt-2 border-t border-gray-800/40">
-                        <label class="block text-[11px] font-semibold text-gray-500 mb-1">Ajouter une catégorie</label>
+                        <label class="block text-[11px] font-semibold text-gray-500 mb-1">Créer une catégorie sur-mesure</label>
                         <div class="flex gap-2">
-                            <input type="text" id="custom-cat-input" placeholder="Ex: Nourriture bébé" class="flex-1 bg-[#1E293B] border border-gray-700 rounded-lg px-2 py-1.5 text-xs text-white focus:outline-none focus:ring-1 focus:ring-blue-500" />
-                            <button onclick="createCustomCategory()" class="bg-gray-700 hover:bg-gray-600 text-gray-200 text-xs px-3 py-1.5 rounded-lg transition">Créer</button>
+                            <input type="text" id="custom-cat-input" placeholder="Ex: Élevage, Tontine..." class="flex-1 bg-[#1E293B] border border-gray-700 rounded-lg px-2 py-1.5 text-xs text-white focus:outline-none focus:ring-1 focus:ring-blue-500" />
+                            <button onclick="createCustomCategory()" class="bg-gray-700 hover:bg-gray-600 text-gray-200 text-xs px-3 py-1.5 rounded-lg transition">Ajouter</button>
                         </div>
                     </div>
                 </div>
             </aside>
 
-            <!-- PARTIE DROITE : RÉSULTATS & TABLEAU -->
+            <!-- CONSOLE DE CALCULS & ANALYSE -->
             <div class="lg:col-span-2 space-y-5">
 
-                <!-- 3 horizons -->
+                <!-- Horizons de trésorerie -->
                 <div class="grid grid-cols-3 gap-3">
                     <div class="glass-card p-4 rounded-xl text-center border border-gray-800/40">
-                        <span class="text-[10px] text-gray-400 block uppercase font-bold">Horizon / Jour</span>
-                        <div id="horizon-day" class="text-lg font-bold mt-1 text-white">0 <span class="text-[10px] lbl-currency">FCFA</span></div>
+                        <span class="text-[10px] text-gray-400 block uppercase font-bold">Revenu / Jour théorique</span>
+                        <div id="horizon-day" class="text-base font-bold mt-1 text-white">0 <span class="text-[10px] lbl-currency">FCFA</span></div>
                     </div>
                     <div class="glass-card p-4 rounded-xl text-center border border-gray-800/40">
-                        <span class="text-[10px] text-gray-400 block uppercase font-bold">Horizon / Semaine</span>
-                        <div id="horizon-week" class="text-lg font-bold mt-1 text-white">0 <span class="text-[10px] lbl-currency">FCFA</span></div>
+                        <span class="text-[10px] text-gray-400 block uppercase font-bold">Revenu / Semaine</span>
+                        <div id="horizon-week" class="text-base font-bold mt-1 text-white">0 <span class="text-[10px] lbl-currency">FCFA</span></div>
                     </div>
                     <div class="glass-card p-4 rounded-xl text-center border border-blue-500/20 bg-blue-950/20">
-                        <span class="text-[10px] text-blue-400 block uppercase font-bold">Horizon / Mois</span>
-                        <div id="horizon-month" class="text-lg font-bold mt-1 text-blue-400">0 <span class="text-[10px] lbl-currency">FCFA</span></div>
+                        <span class="text-[10px] text-blue-400 block uppercase font-bold">Revenu / Mois Global</span>
+                        <div id="horizon-month" class="text-base font-bold mt-1 text-blue-400">0 <span class="text-[10px] lbl-currency">FCFA</span></div>
                     </div>
                 </div>
 
-                <!-- Épargne nette -->
+                <!-- Capacité d'Épargne Nette Actuelle -->
                 <div class="bg-gradient-to-br from-[#111827] via-[#10221E] to-[#0D1F1A] border border-emerald-500/20 rounded-2xl p-5 flex flex-wrap justify-between items-center shadow-xl">
                     <div>
-                        <span class="text-xs text-emerald-400 uppercase font-bold tracking-wider block">Épargne & Reste Mensuel Net</span>
-                        <p class="text-[11px] text-gray-400 mt-0.5">Ce qui reste après déduction de toutes vos charges.</p>
+                        <span class="text-xs text-emerald-400 uppercase font-bold tracking-wider block">Solde Restant / Épargne Nette Mensuelle</span>
+                        <p class="text-[11px] text-gray-400 mt-0.5">Ce qu'il vous reste réellement après déduction de toutes les charges enregistrées.</p>
                     </div>
                     <div id="net-savings" class="text-2xl font-extrabold text-emerald-400">0 <span class="text-xs lbl-currency">FCFA</span></div>
                 </div>
 
-                <!-- Liste des dépenses -->
+                <!-- Tableau de suivi local -->
                 <div class="glass-card rounded-2xl p-5 border border-gray-800/40">
                     <div class="flex justify-between items-center mb-3">
-                        <h3 class="text-xs font-bold uppercase tracking-wider text-white">Dépenses enregistrées</h3>
-                        <button onclick="clearData()" class="text-[10px] text-rose-400 hover:underline transition">Tout réinitialiser</button>
+                        <h3 class="text-xs font-bold uppercase tracking-wider text-white">Vos Charges Fixes et Variables</h3>
+                        <button onclick="clearData()" class="text-[10px] text-rose-400 hover:underline transition">Réinitialiser l'application</button>
                     </div>
-                    <div class="overflow-x-auto max-h-64 overflow-y-auto">
+                    <div class="overflow-x-auto max-h-60 overflow-y-auto">
                         <table class="w-full text-left text-xs">
                             <thead class="text-gray-500 font-bold uppercase border-b border-gray-800/40">
                                 <tr>
-                                    <th class="pb-2">Catégorie</th>
-                                    <th class="pb-2">Description</th>
-                                    <th class="pb-2 text-right">Impact Mensuel</th>
+                                    <th class="pb-2">Poste / Catégorie</th>
+                                    <th class="pb-2">Détails</th>
+                                    <th class="pb-2 text-right">Poids Mensuel</th>
                                 </tr>
                             </thead>
                             <tbody id="expenses-log" class="divide-y divide-gray-800/30">
-                                <tr><td colspan="3" class="py-4 text-center text-gray-500 italic">Aucune dépense. Ajoutez-en une à gauche.</td></tr>
+                                <tr><td colspan="3" class="py-4 text-center text-gray-500 italic">Aucune charge ajoutée pour l'instant.</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -245,62 +208,38 @@
             </div>
         </div>
 
-        <!-- PROJECTIONS & COACHING + IA -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-
-            <!-- Projection patrimoniale -->
-            <div class="glass-card rounded-2xl p-6 shadow-xl border border-gray-800/40 relative overflow-hidden md:col-span-1">
-                <div class="absolute -right-12 -bottom-12 w-36 h-36 bg-blue-600/5 rounded-full blur-2xl"></div>
+        <!-- BILAN COMPORTEMENTAL AVANCÉ ET PROJECTIONS -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            <!-- Projections Temporelles Automatiques -->
+            <div class="glass-card rounded-2xl p-6 shadow-xl border border-gray-800/40 relative overflow-hidden">
                 <h3 class="text-sm font-bold text-white uppercase tracking-wider mb-4 flex items-center gap-2">
-                    🔮 Projection (cap maintenu)
+                    🔮 Projections Patrimoniales Automatiques
                 </h3>
                 <div class="space-y-3">
                     <div class="flex justify-between items-center p-3 bg-[#1E293B] rounded-xl border border-gray-700/50">
-                        <span class="text-xs text-gray-300 font-medium">Capital dans <b>1 an</b></span>
+                        <span class="text-xs text-gray-300 font-medium">Trésorerie accumulée dans <b>1 an</b></span>
                         <span id="proj-1" class="text-sm font-bold text-blue-400">0 FCFA</span>
                     </div>
                     <div class="flex justify-between items-center p-3 bg-[#1E293B] rounded-xl border border-gray-700/50">
-                        <span class="text-xs text-gray-300 font-medium">Capital dans <b>3 ans</b></span>
+                        <span class="text-xs text-gray-300 font-medium">Trésorerie accumulée dans <b>3 ans</b></span>
                         <span id="proj-3" class="text-sm font-bold text-indigo-400">0 FCFA</span>
                     </div>
                     <div class="flex justify-between items-center p-3 bg-[#1E293B] rounded-xl border border-gray-700/50">
-                        <span class="text-xs text-gray-300 font-medium">Capital dans <b>5 ans</b></span>
+                        <span class="text-xs text-gray-300 font-medium">Trésorerie accumulée dans <b>5 ans</b></span>
                         <span id="proj-5" class="text-sm font-bold text-purple-400">0 FCFA</span>
                     </div>
                 </div>
             </div>
 
-            <!-- Bilan comportemental -->
-            <div class="glass-card rounded-2xl p-6 shadow-xl border border-purple-500/20 relative overflow-hidden md:col-span-1">
-                <div class="absolute -right-12 -top-12 w-36 h-36 bg-purple-600/5 rounded-full blur-2xl"></div>
-                <h3 class="text-sm font-bold text-purple-400 uppercase tracking-wider mb-2 flex items-center gap-2">
-                    📋 Bilan comportemental
+            <!-- MOTEUR DE BILAN COMPORTEMENTAL (ALGORITHME LOCAL) -->
+            <div class="glass-card rounded-2xl p-6 shadow-xl border border-blue-500/20 relative overflow-hidden">
+                <h3 class="text-sm font-bold text-blue-400 uppercase tracking-wider mb-2 flex items-center gap-2">
+                    📊 Bilan Comportemental & Audit Budgétaire
                 </h3>
-                <p class="text-[11px] text-gray-500 mb-3">Analyse instantanée de votre profil budgétaire.</p>
-                <div id="coaching-feedback" class="text-xs leading-relaxed text-gray-300 bg-black/30 border border-gray-700/60 rounded-xl p-4 min-h-[110px] flex items-center italic">
-                    Renseignez vos gains et dépenses ci-dessus pour activer le diagnostic.
-                </div>
-            </div>
-
-            <!-- INTERFACE JOURNALIÈRE IA -->
-            <div class="glass-card rounded-2xl p-6 shadow-xl border border-blue-500/30 relative overflow-hidden md:col-span-1 flex flex-col justify-between">
-                <div class="absolute -left-12 -bottom-12 w-36 h-36 bg-blue-600/10 rounded-full blur-2xl"></div>
-                <div>
-                    <h3 class="text-sm font-bold text-blue-400 uppercase tracking-wider mb-1 flex items-center gap-2">
-                        🤖 Assistant IA Journalier
-                    </h3>
-                    <p class="text-[11px] text-gray-400 mb-3">Comment s'est passée ta journée ? Raconte-moi tes dépenses.</p>
-                    
-                    <div id="ai-chat-box" class="text-xs bg-black/40 border border-gray-800 rounded-xl p-3 text-gray-300 h-24 overflow-y-auto mb-3 scrollbar">
-                        <span class="text-blue-400 font-bold">IA :</span> Salut ! Qu'as-tu fait aujourd'hui ? As-tu eu des dépenses ou des revenus imprévus à me signaler ?
-                    </div>
-                </div>
-
-                <div class="space-y-2">
-                    <textarea id="ai-user-input" rows="2" placeholder="Ex: Aujourd'hui j'ai acheté un repas à 3000 FCFA et pris le taxi..." class="w-full bg-[#1E293B] border border-gray-700 rounded-xl p-2 text-xs text-white focus:outline-none focus:ring-1 focus:ring-blue-500 resize-none"></textarea>
-                    <button onclick="talkToAI()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold py-1.5 rounded-xl text-xs transition-all shadow-md shadow-blue-600/20">
-                        Envoyer à l'IA
-                    </button>
+                <p class="text-[11px] text-gray-400 mb-3">Analyse algorithmique complète basée sur les structures de dépenses africaines courantes.</p>
+                <div id="coaching-feedback" class="text-xs leading-relaxed text-gray-300 bg-black/30 border border-gray-700/60 rounded-xl p-4 min-h-[115px] flex flex-col justify-center italic">
+                    Renseignez vos entrées financières et vos charges pour obtenir votre rapport comportemental détaillé en temps réel.
                 </div>
             </div>
         </div>
@@ -308,10 +247,7 @@
     </main>
 
     <script>
-        // 🔑 TA CLÉ API DIRECTEMENT INJECTÉE ICI :
-        const GEMINI_API_KEY ="AIzaSyD7DjS2udwWQ04nfGWSHQSou9wkc7fMhP8"
-
-        // ---------- ÉTAT CENTRAL ----------
+        // ---------- ÉTAT CENTRAL DE L'APPLICATION ----------
         const state = {
             currency: 'FCFA',
             incBaseMois: 0,
@@ -321,90 +257,60 @@
             expenses: [],
         };
 
-        // ---------- PERSISTANCE ----------
+        // ---------- HORLOGE EN TEMPS RÉEL ----------
+        function updateClock() {
+            const now = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const dateStr = now.toLocaleDateString('fr-FR', options);
+            const timeStr = now.toLocaleTimeString('fr-FR');
+            document.getElementById('live-clock').innerText = `📅 ${dateStr} · ⏰ ${timeStr}`;
+        }
+        setInterval(updateClock, 1000);
+
+        // ---------- SAUVEGARDE & PERSISTANCE (LOCALSTORAGE) ----------
         function saveState() {
             state.currency = document.getElementById('currency-select').value;
             state.incBaseMois = parseFloat(document.getElementById('inc-base-mois').value) || 0;
             state.incAddJour = parseFloat(document.getElementById('inc-add-jour').value) || 0;
             state.incAddSem = parseFloat(document.getElementById('inc-add-sem').value) || 0;
             state.incAddMois = parseFloat(document.getElementById('inc-add-mois').value) || 0;
-            try {
-                localStorage.setItem('smartplan_data', JSON.stringify(state));
-            } catch (_) { /* ignore */ }
+            localStorage.setItem('smartplan_data_pro', JSON.stringify(state));
         }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            loadState();
-            try {
-                const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-                document.getElementById('auto-geo').innerText = `📍 ${tz}`;
-            } catch (_) {
-                document.getElementById('auto-geo').innerText = '📍 Connecté';
-            }
-            calculateAll();
-        });
 
         function loadState() {
             try {
-                const raw = localStorage.getItem('smartplan_data');
+                const raw = localStorage.getItem('smartplan_data_pro');
                 if (!raw) return;
                 const parsed = JSON.parse(raw);
                 Object.assign(state, parsed);
+                
                 document.getElementById('currency-select').value = state.currency;
                 document.getElementById('inc-base-mois').value = state.incBaseMois || '';
                 document.getElementById('inc-add-jour').value = state.incAddJour || '';
                 document.getElementById('inc-add-sem').value = state.incAddSem || '';
                 document.getElementById('inc-add-mois').value = state.incAddMois || '';
-            } catch (_) { /* ignore */ }
+            } catch (e) { console.error("Erreur de chargement", e); }
         }
 
-        // ---------- APPEL DIRECT À L'API GEMINI ----------
-        async function talkToAI() {
-            const input = document.getElementById('ai-user-input');
-            const chatBox = document.getElementById('ai-chat-box');
-            const text = input.value.trim();
-            if(!text) return;
-
-            chatBox.innerHTML += `<div class="mt-2 text-right text-gray-400"><b>Moi :</b> ${text}</div>`;
-            input.value = '';
-            chatBox.scrollTop = chatBox.scrollHeight;
-
-            const totalIncome = state.incBaseMois + (state.incAddJour * 30) + (state.incAddSem * 4.33) + state.incAddMois;
-            const promptContext = `Tu es l'assistant budgétaire intelligent "Smart Budget Africa". L'utilisateur gagne actuellement un total de ${totalIncome} ${state.currency} par mois. Il te confie ceci sur sa journée : "${text}". Réponds-lui directement d'un ton chaleureux, très court (2 sentences max), donne un conseil financier pertinent lié à sa journée ou pose-lui une question pour l'amener à mieux épargner.`;
-
+        document.addEventListener('DOMContentLoaded', () => {
+            loadState();
+            updateClock();
+            // Détection de localisation simplifiée via fuseau horaire
             try {
-                chatBox.innerHTML += `<div id="ai-loading" class="mt-1 text-gray-500 italic"><b>IA :</b> Analyse en cours...</div>`;
-                chatBox.scrollTop = chatBox.scrollHeight;
-                
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        contents: [{ parts: [{ text: promptContext }] }]
-                    })
-                });
+                const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+                document.getElementById('auto-geo').innerText = `📍 ${tz}`;
+            } catch (_) { document.getElementById('auto-geo').innerText = '📍 Zone Connectée'; }
+            calculateAll();
+        });
 
-                const data = await response.json();
-                const loader = document.getElementById('ai-loading');
-                if(loader) loader.remove();
-
-                const aiReply = data.candidates[0].content.parts[0].text;
-                chatBox.innerHTML += `<div class="mt-1 text-blue-300"><b>IA :</b> ${aiReply}</div>`;
-            } catch (error) {
-                const loader = document.getElementById('ai-loading');
-                if(loader) loader.remove();
-                chatBox.innerHTML += `<div class="mt-1 text-rose-400"><b>IA :</b> Oups, impossible de me connecter. Vérifie ta clé API.</div>`;
-            }
-            chatBox.scrollTop = chatBox.scrollHeight;
-        }
-
+        // ---------- GESTION DES CATÉGORIES ET AJOUTS ----------
         function createCustomCategory() {
             const val = document.getElementById('custom-cat-input').value.trim();
             if (!val) return;
             const select = document.getElementById('exp-category');
             const opt = document.createElement('option');
-            opt.value = '📁 ' + val;
-            opt.innerText = '📁 ' + val;
+            opt.value = '📂 ' + val;
+            opt.innerText = '📂 ' + val;
             select.appendChild(opt);
             select.value = opt.value;
             document.getElementById('custom-cat-input').value = '';
@@ -414,33 +320,23 @@
             const amount = parseFloat(document.getElementById('exp-amount').value);
             const category = document.getElementById('exp-category').value;
             const freq = document.getElementById('exp-freq').value;
-            const details = document.getElementById('exp-details').value.trim() || 'Frais courant';
+            const details = document.getElementById('exp-details').value.trim() || 'Charge courante';
 
             if (!amount || amount <= 0) {
-                alert('Veuillez entrer un montant valide.');
+                alert('Veuillez entrer un montant valide supérieur à 0.');
                 return;
             }
 
-            state.expenses.unshift({
-                category,
-                amount,
-                freq,
-                details,
-                id: Date.now() + Math.random()
-            });
-
+            state.expenses.unshift({ category, amount, freq, details, id: Date.now() });
             document.getElementById('exp-amount').value = '';
             document.getElementById('exp-details').value = '';
             calculateAll();
         }
 
         function clearData() {
-            if (!confirm('Effacer définitivement toutes vos données ?')) return;
+            if (!confirm('Voulez-vous réinitialiser l\'ensemble de vos données ? Toutes les charges seront effacées.')) return;
             state.expenses = [];
-            state.incBaseMois = 0;
-            state.incAddJour = 0;
-            state.incAddSem = 0;
-            state.incAddMois = 0;
+            state.incBaseMois = 0; state.incAddJour = 0; state.incAddSem = 0; state.incAddMois = 0;
             document.getElementById('inc-base-mois').value = '';
             document.getElementById('inc-add-jour').value = '';
             document.getElementById('inc-add-sem').value = '';
@@ -448,35 +344,38 @@
             calculateAll();
         }
 
+        // ---------- MOTEUR DE CALCULS & AUDIT COMPORTEMENTAL ----------
         function calculateAll() {
             saveState();
-
             const currency = state.currency;
-            const totalMonthlyIncome = state.incBaseMois +
-                (state.incAddJour * 30) +
-                (state.incAddSem * 4.33) +
-                state.incAddMois;
 
-            document.getElementById('horizon-day').innerHTML =
-                `${Math.round(totalMonthlyIncome / 30).toLocaleString()} <span class="text-[10px] lbl-currency">${currency}</span>`;
-            document.getElementById('horizon-week').innerHTML =
-                `${Math.round(totalMonthlyIncome / 4.33).toLocaleString()} <span class="text-[10px] lbl-currency">${currency}</span>`;
-            document.getElementById('horizon-month').innerHTML =
-                `${Math.round(totalMonthlyIncome).toLocaleString()} <span class="text-[10px] lbl-currency">${currency}</span>`;
+            const totalMonthlyIncome = state.incBaseMois + (state.incAddJour * 30) + (state.incAddSem * 4.33) + state.incAddMois;
+
+            document.getElementById('horizon-day').innerHTML = `${Math.round(totalMonthlyIncome / 30).toLocaleString()} <span class="text-[10px]">${currency}</span>`;
+            document.getElementById('horizon-week').innerHTML = `${Math.round(totalMonthlyIncome / 4.33).toLocaleString()} <span class="text-[10px]">${currency}</span>`;
+            document.getElementById('horizon-month').innerHTML = `${Math.round(totalMonthlyIncome).toLocaleString()} <span class="text-[10px]">${currency}</span>`;
 
             let totalMonthlyExpenses = 0;
+            let totalSoutienFamille = 0;
+            let totalLoisirsPlaisirs = 0;
+            let totalFacturesFixes = 0; // Loyer, eau, électricité
+
             const tbody = document.getElementById('expenses-log');
             tbody.innerHTML = '';
 
             if (state.expenses.length === 0) {
-                tbody.innerHTML =
-                    `<tr><td colspan="3" class="py-4 text-center text-gray-500 italic">Aucune dépense configurée. Saisissez vos données à gauche.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="3" class="py-4 text-center text-gray-500 italic">Aucune charge configurée. Saisissez vos données à gauche.</td></tr>`;
             } else {
                 state.expenses.forEach(e => {
                     let costMois = e.amount;
                     if (e.freq === 'semaine') costMois = e.amount * 4.33;
                     if (e.freq === 'jour') costMois = e.amount * 30;
+                    
                     totalMonthlyExpenses += costMois;
+
+                    if (e.category.includes("Soutien Familial")) totalSoutienFamille += costMois;
+                    if (e.category.includes("Loisirs & Plaisirs")) totalLoisirsPlaisirs += costMois;
+                    if (e.category.includes("Loyer") || e.category.includes("Électricité") || e.category.includes("Eau")) totalFacturesFixes += costMois;
 
                     const tr = document.createElement('tr');
                     tr.className = 'border-b border-gray-800/20 hover:bg-gray-800/10 transition-colors fade-in';
@@ -490,11 +389,10 @@
             }
 
             const finalSavings = totalMonthlyIncome - totalMonthlyExpenses;
-            document.getElementById('net-savings').innerHTML =
-                `${Math.round(finalSavings).toLocaleString()} <span class="text-xs lbl-currency">${currency}</span>`;
-
+            document.getElementById('net-savings').innerHTML = `${Math.round(finalSavings).toLocaleString()} <span class="text-xs">${currency}</span>`;
             document.querySelectorAll('.lbl-currency').forEach(el => el.innerText = currency);
 
+            // Projections mathématiques stables
             const cap1An = finalSavings > 0 ? finalSavings * 12 : 0;
             const cap3Ans = finalSavings > 0 ? finalSavings * 12 * 3 : 0;
             const cap5Ans = finalSavings > 0 ? finalSavings * 12 * 5 : 0;
@@ -503,38 +401,47 @@
             document.getElementById('proj-3').innerText = `${Math.round(cap3Ans).toLocaleString()} ${currency}`;
             document.getElementById('proj-5').innerText = `${Math.round(cap5Ans).toLocaleString()} ${currency}`;
 
+            // LOGIQUE DE L'AUDIT BUDGÉTAIRE ALGORITHMIQUE POUCHÉ
             const feedback = document.getElementById('coaching-feedback');
-
             if (totalMonthlyIncome === 0) {
-                feedback.className = 'text-xs leading-relaxed text-gray-300 bg-black/30 border border-gray-700/60 rounded-xl p-4 flex items-center italic';
-                feedback.innerHTML = '💡 <b>Démarrage :</b> Renseignez au moins un revenu fixe ou des gains journaliers pour activer l\'analyse.';
+                feedback.className = 'text-xs leading-relaxed text-gray-300 bg-black/30 border border-gray-700/60 rounded-xl p-4 italic';
+                feedback.innerHTML = '💡 <b>En attente de données :</b> Ajoutez vos revenus pour démarrer l\'analyse comportementale de vos finances.';
                 return;
             }
 
-            const loisirs = state.expenses
-                .filter(e => e.category.includes('Loisirs') || e.category.includes('Plaisirs'))
-                .reduce((acc, curr) => {
-                    let cost = curr.amount;
-                    if (curr.freq === 'semaine') cost *= 4.33;
-                    if (curr.freq === 'jour') cost *= 30;
-                    return acc + cost;
-                }, 0);
+            let diagnosticHTML = "";
+            let pSoutien = (totalSoutienFamille / totalMonthlyIncome) * 100;
+            let pLoisirs = (totalLoisirsPlaisirs / totalMonthlyIncome) * 100;
+            let pChargesFixes = (totalFacturesFixes / totalMonthlyIncome) * 100;
 
             if (finalSavings < 0) {
-                feedback.className = 'text-xs leading-relaxed text-rose-300 bg-rose-950/20 border border-rose-500/30 rounded-xl p-4';
-                feedback.innerHTML = '🚨 <b>Déficit critique :</b> Vos dépenses dépassent vos revenus. Vous êtes en zone rouge. Réduisez immédiatement les postes non essentiels.';
-            } else if (loisirs > totalMonthlyIncome * 0.2) {
-                feedback.className = 'text-xs leading-relaxed text-amber-300 bg-amber-950/20 border border-amber-500/30 rounded-xl p-4';
-                feedback.innerHTML = '⚠️ <b>Attention loisirs :</b> Plus de 20% de vos revenus partent en loisirs. C\'est un signal de fuite de capitaux.';
-            } else if (finalSavings >= totalMonthlyIncome * 0.35) {
-                feedback.className = 'text-xs leading-relaxed text-emerald-300 bg-emerald-950/20 border border-emerald-500/30 rounded-xl p-4';
-                feedback.innerHTML = `🌟 <b>Excellence financière :</b> Vous épargnez plus de 35% de vos revenus.`;
+                feedback.className = 'text-xs leading-relaxed text-rose-300 bg-rose-950/20 border border-rose-500/30 rounded-xl p-4 space-y-1';
+                diagnosticHTML = `🚨 <b>DANGER FINANCIER (Déficit) :</b> Vos charges dépassent vos revenus de <b>${Math.abs(Math.round(finalSavings)).toLocaleString()} ${currency}</b>. Vous piochez dans des dettes. Réduisez immédiatement les abonnements non essentiels ou les loisirs.`;
             } else {
-                feedback.className = 'text-xs leading-relaxed text-gray-300 bg-gray-900/40 border border-gray-700/60 rounded-xl p-4';
-                feedback.innerHTML = '⚖️ <b>Profil équilibré :</b> Vos comptes sont sains, mais votre marge d\'épargne reste modeste.';
+                feedback.className = 'text-xs leading-relaxed text-gray-200 bg-gray-900/50 border border-gray-700/60 rounded-xl p-4 space-y-2';
+                
+                let santeEpargne = (finalSavings / totalMonthlyIncome) * 100;
+                if (santeEpargne >= 35) {
+                    diagnosticHTML += `🌟 <b>Excellent Gestionnaire :</b> Vous épargnez ${Math.round(santeEpargne)}% de vos revenus. Votre profil est hautement sécurisé.<br/>`;
+                } else if (santeEpargne >= 15) {
+                    diagnosticHTML += `⚖️ <b>Profil Équilibré :</b> Vos finances sont stables avec ${Math.round(santeEpargne)}% d'épargne nette. C'est correct, continuez à surveiller les petits postes.<br/>`;
+                } else {
+                    diagnosticHTML += `⚠️ <b>Marge Vulnérable :</b> Vous épargnez moins de 15% de vos revenus. Le moindre imprévu majeur vous mettra en difficulté.<br/>`;
+                }
+
+                // Analyses ciblées demandées par l'utilisateur
+                if (pSoutien > 20) {
+                    diagnosticHTML += `• 🖤 <b>Alerte Solidarité :</b> Le soutien à la famille absorbe ${Math.round(pSoutien)}% de vos ressources. La générosité est noble, mais veillez à ne pas vous mettre en péril financier.<br/>`;
+                }
+                if (pLoisirs > 15) {
+                    diagnosticHTML += `• 🎉 <b>Friction Plaisirs :</b> Les loisirs et sorties représentent ${Math.round(pLoisirs)}% de vos gains. C'est une fuite de capitaux facile à optimiser.<br/>`;
+                }
+                if (pChargesFixes > 50) {
+                    diagnosticHTML += `• 🏠 <b>Poids du Quotidien :</b> Votre Loyer + Eau + Électricité absorbe ${Math.round(pChargesFixes)}% de vos entrées. Vos coûts structurels fixes sont très lourds.`;
+                }
             }
+            feedback.innerHTML = diagnosticHTML;
         }
     </script>
-
 </body>
 </html>
