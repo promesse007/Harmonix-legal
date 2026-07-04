@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SmarTPlan · Planificateur de Vie & Budget</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4">
-    </script>
+    <title>Smart Budget Africa - Planificateur de Budget</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <style>
         * {
@@ -68,7 +67,7 @@
                 </svg>
             </div>
             <div>
-                <h1 class="text-xl font-extrabold tracking-tight text-white">SmarTPlan <span class="text-blue-500">Pro</span></h1>
+                <h1 class="text-xl font-extrabold tracking-tight text-white">Smart Budget Africa <span class="text-blue-500">Pro</span></h1>
                 <p class="text-[11px] text-gray-400 font-medium uppercase tracking-wider">Planification Universelle · Simulation de Vie</p>
             </div>
         </div>
@@ -246,11 +245,11 @@
             </div>
         </div>
 
-        <!-- PROJECTIONS & COACHING -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- PROJECTIONS & COACHING + IA -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
 
             <!-- Projection patrimoniale -->
-            <div class="glass-card rounded-2xl p-6 shadow-xl border border-gray-800/40 relative overflow-hidden">
+            <div class="glass-card rounded-2xl p-6 shadow-xl border border-gray-800/40 relative overflow-hidden md:col-span-1">
                 <div class="absolute -right-12 -bottom-12 w-36 h-36 bg-blue-600/5 rounded-full blur-2xl"></div>
                 <h3 class="text-sm font-bold text-white uppercase tracking-wider mb-4 flex items-center gap-2">
                     🔮 Projection (cap maintenu)
@@ -272,7 +271,7 @@
             </div>
 
             <!-- Bilan comportemental -->
-            <div class="glass-card rounded-2xl p-6 shadow-xl border border-purple-500/20 relative overflow-hidden">
+            <div class="glass-card rounded-2xl p-6 shadow-xl border border-purple-500/20 relative overflow-hidden md:col-span-1">
                 <div class="absolute -right-12 -top-12 w-36 h-36 bg-purple-600/5 rounded-full blur-2xl"></div>
                 <h3 class="text-sm font-bold text-purple-400 uppercase tracking-wider mb-2 flex items-center gap-2">
                     📋 Bilan comportemental
@@ -280,6 +279,28 @@
                 <p class="text-[11px] text-gray-500 mb-3">Analyse instantanée de votre profil budgétaire.</p>
                 <div id="coaching-feedback" class="text-xs leading-relaxed text-gray-300 bg-black/30 border border-gray-700/60 rounded-xl p-4 min-h-[110px] flex items-center italic">
                     Renseignez vos gains et dépenses ci-dessus pour activer le diagnostic.
+                </div>
+            </div>
+
+            <!-- NOUVEAU COMPOSANT : INTERFACE JOURNALIÈRE IA -->
+            <div class="glass-card rounded-2xl p-6 shadow-xl border border-blue-500/30 relative overflow-hidden md:col-span-1 flex flex-col justify-between">
+                <div class="absolute -left-12 -bottom-12 w-36 h-36 bg-blue-600/10 rounded-full blur-2xl"></div>
+                <div>
+                    <h3 class="text-sm font-bold text-blue-400 uppercase tracking-wider mb-1 flex items-center gap-2">
+                        🤖 Assistant IA Journalier
+                    </h3>
+                    <p class="text-[11px] text-gray-400 mb-3">Comment s'est passée ta journée ? Raconte-moi tes dépenses.</p>
+                    
+                    <div id="ai-chat-box" class="text-xs bg-black/40 border border-gray-800 rounded-xl p-3 text-gray-300 h-24 overflow-y-auto mb-3 scrollbar">
+                        <span class="text-blue-400 font-bold">IA :</span> Salut ! Qu'as-tu fait aujourd'hui ? As-tu eu des dépenses ou des revenus imprévus à me signaler ?
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <textarea id="ai-user-input" rows="2" placeholder="Ex: Aujourd'hui j'ai acheté un repas à 3000 FCFA et pris le taxi..." class="w-full bg-[#1E293B] border border-gray-700 rounded-xl p-2 text-xs text-white focus:outline-none focus:ring-1 focus:ring-blue-500 resize-none"></textarea>
+                    <button onclick="talkToAI()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold py-1.5 rounded-xl text-xs transition-all shadow-md shadow-blue-600/20">
+                        Envoyer à l'IA
+                    </button>
                 </div>
             </div>
         </div>
@@ -335,6 +356,24 @@
             }
             calculateAll();
         };
+
+        // ---------- FONCTION SIMULATION IA ----------
+        function talkToAI() {
+            const input = document.getElementById('ai-user-input');
+            const chatBox = document.getElementById('ai-chat-box');
+            const text = input.value.trim();
+            if(!text) return;
+
+            // Afficher le texte de l'utilisateur
+            chatBox.innerHTML += `<div class="mt-2"><b>Moi :</b> ${text}</div>`;
+            input.value = '';
+
+            // Petite réponse automatique en attendant la vraie connexion API
+            setTimeout(() => {
+                chatBox.innerHTML += `<div class="mt-1 text-blue-300"><b>IA :</b> C'est bien noté pour ta journée ! Je commence à analyser ça pour voir l'impact sur ton budget Smart Budget Africa.</div>`;
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }, 800);
+        }
 
         // ---------- CATÉGORIE PERSONNALISÉE ----------
         function createCustomCategory() {
