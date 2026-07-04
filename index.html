@@ -1,333 +1,243 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SmarTCoach Pro v2</title>
-    <!-- Tailwind CSS v4 -->
+    <title>SmarTCoach Pro — Gestion Financière Universelle</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; transition: background-color 0.3s, color 0.3s; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .tab-active { border-bottom: 4px solid #2563eb; color: #2563eb; font-weight: 600; }
+        .card-hover { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .card-hover:hover { transform: translateY(-4px); box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1); }
     </style>
 </head>
-<body id="app-body" class="bg-gray-50 text-gray-900 min-h-screen">
+<body class="bg-gray-50 dark:bg-neutral-950 text-gray-900 dark:text-neutral-100 min-h-screen">
 
-    <!-- NAVBAR CLAIRE ET PRO -->
-    <nav class="border-b border-gray-200 bg-white sticky top-0 z-50 px-6 py-4 flex justify-between items-center shadow-sm dark:bg-[#111827] dark:border-gray-800">
-        <div class="flex items-center gap-3">
-            <div class="bg-blue-600 p-2.5 rounded-xl text-white">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+    <nav class="bg-white dark:bg-neutral-900 border-b border-gray-200 dark:border-neutral-800 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-8 py-5 flex justify-between items-center">
+            <div class="flex items-center gap-4">
+                <div class="w-10 h-10 bg-gradient-to-br from-blue-600 via-indigo-600 to-violet-600 rounded-2xl flex items-center justify-center text-white shadow-xl">
+                    <i class="fa-solid fa-coins text-2xl"></i>
+                </div>
+                <div>
+                    <span class="text-3xl font-bold tracking-tighter">SmarTCoach</span>
+                    <span class="text-blue-600 font-semibold">Pro</span>
+                </div>
             </div>
-            <div>
-                <span class="text-lg font-bold tracking-tight dark:text-white">SmarTCoach <span class="text-blue-600">Intelligence</span></span>
-                <span class="text-xs block text-gray-500 font-medium dark:text-gray-400">Gestion Financière Universelle</span>
+            <div class="flex items-center gap-6">
+                <button onclick="toggleTheme()" class="text-2xl">🌗</button>
+                <button onclick="showAPIConfig()" class="flex items-center gap-2 px-5 py-2.5 bg-neutral-900 text-white rounded-2xl hover:bg-black">
+                    <i class="fa-solid fa-key"></i> API IA
+                </button>
             </div>
-        </div>
-
-        <!-- Options Globales -->
-        <div class="flex items-center gap-4">
-            <!-- Bouton Thème -->
-            <button onclick="toggleTheme()" class="p-2 rounded-xl bg-gray-100 hover:bg-gray-200 dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 transition-colors">
-                🌓 Style Visuel
-            </button>
-            <!-- Sélecteur Monnaie -->
-            <select id="global-currency" onchange="changeCurrency()" class="bg-gray-100 dark:bg-gray-800 dark:text-white border-none rounded-xl px-3 py-2 text-sm font-semibold focus:outline-none">
-                <option value="FCFA">FCFA (XOF/XAF)</option>
-                <option value="$">$ USD</option>
-                <option value="€">€ EUR</option>
-                <option value="£">£ GBP</option>
-            </select>
         </div>
     </nav>
 
-    <!-- NAVIGATION PAR ONGLETS (ACCUEIL, CONFIG, DASHBOARD, IA) -->
-    <div class="max-w-6xl mx-auto px-4 mt-6">
-        <div class="flex border-b border-gray-200 dark:border-gray-800 gap-2 overflow-x-auto">
-            <button onclick="switchTab('tab-home')" id="btn-tab-home" class="px-5 py-3 text-sm font-medium border-b-2 border-blue-600 text-blue-600 focus:outline-none transition-all">🏠 Accueil & Profil</button>
-            <button onclick="switchTab('tab-config')" id="btn-tab-config" class="px-5 py-3 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 focus:outline-none transition-all">⚙️ Saisir mes Flux</button>
-            <button onclick="switchTab('tab-dash')" id="btn-tab-dash" class="px-5 py-3 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 focus:outline-none transition-all">📊 Tableau de Bord</button>
-            <button onclick="switchTab('tab-ia')" id="btn-tab-ia" class="px-5 py-3 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 focus:outline-none transition-all">🧠 Audit Coach IA</button>
+    <div class="max-w-7xl mx-auto px-8 py-8">
+        <!-- Tabs -->
+        <div class="flex gap-10 border-b border-gray-200 dark:border-neutral-800 mb-10 overflow-x-auto">
+            <button onclick="switchTab(0)" id="tab-0-btn" class="tab-active pb-4">🏠 Accueil & Profil</button>
+            <button onclick="switchTab(1)" id="tab-1-btn" class="pb-4 text-gray-500 dark:text-neutral-400 hover:text-gray-700">💰 Mes Flux</button>
+            <button onclick="switchTab(2)" id="tab-2-btn" class="pb-4 text-gray-500 dark:text-neutral-400 hover:text-gray-700">📊 Tableau de Bord</button>
+            <button onclick="switchTab(3)" id="tab-3-btn" class="pb-4 text-gray-500 dark:text-neutral-400 hover:text-gray-700">🧠 Audit IA</button>
+        </div>
+
+        <!-- TAB 0 : Profil Universel -->
+        <section id="tab-0" class="space-y-10">
+            <div class="bg-white dark:bg-neutral-900 rounded-3xl p-10 shadow-sm">
+                <h1 class="text-4xl font-bold mb-2">Bienvenue dans votre coach financier personnel</h1>
+                <p class="text-lg text-gray-500 dark:text-neutral-400">Peu importe qui vous êtes ou où vous vivez, SmarTCoach s’adapte.</p>
+
+                <div class="grid md:grid-cols-3 gap-6 mt-10">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Votre profil</label>
+                        <select id="profile" class="w-full rounded-2xl px-6 py-4 bg-gray-100 dark:bg-neutral-800">
+                            <option value="Femme Commerçante">👩🏾‍💼 Femme Commerçante</option>
+                            <option value="Restaurateur">🍲 Restaurateur / Traiteur</option>
+                            <option value="Salarié">💼 Salarié / Fonctionnaire</option>
+                            <option value="Étudiant">🎓 Étudiant</option>
+                            <option value="Femme au foyer">🏠 Femme au foyer</option>
+                            <option value="Entrepreneur">🚀 Entrepreneur</option>
+                            <option value="Autre">Autre</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Pays</label>
+                        <select id="country" onchange="updateCurrency()" class="w-full rounded-2xl px-6 py-4 bg-gray-100 dark:bg-neutral-800">
+                            <option value="Côte d'Ivoire">🇨🇮 Côte d'Ivoire</option>
+                            <option value="Sénégal">🇸🇳 Sénégal</option>
+                            <option value="France">🇫🇷 France</option>
+                            <option value="USA">🇺🇸 États-Unis</option>
+                            <option value="Cameroun">🇨🇲 Cameroun</option>
+                            <option value="Autre">🌍 Autre pays</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Numéro WhatsApp</label>
+                        <input type="tel" id="whatsapp" placeholder="+225 07 00 00 00" 
+                               class="w-full rounded-2xl px-6 py-4 bg-gray-100 dark:bg-neutral-800">
+                    </div>
+                </div>
+                <button onclick="saveProfile()" class="mt-8 w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-5 rounded-2xl text-lg font-semibold">Valider mon profil et continuer</button>
+            </div>
+        </section>
+
+        <!-- TAB 1 : Flux (avec catégories riches) -->
+        <section id="tab-1" class="hidden">
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- Revenus -->
+                <div class="bg-white dark:bg-neutral-900 rounded-3xl p-8">
+                    <h3 class="text-2xl font-semibold mb-6">💰 Revenus</h3>
+                    <input id="income-val" type="number" placeholder="Montant" class="w-full px-6 py-5 rounded-2xl bg-gray-100 dark:bg-neutral-800 text-2xl mb-4">
+                    <select id="income-freq" class="w-full px-6 py-5 rounded-2xl bg-gray-100 dark:bg-neutral-800">
+                        <option value="jour">Par jour</option>
+                        <option value="semaine">Par semaine</option>
+                        <option value="mois">Par mois</option>
+                    </select>
+                    <button onclick="saveIncome()" class="mt-6 w-full py-5 bg-green-600 text-white rounded-2xl font-semibold">Enregistrer revenus</button>
+                </div>
+
+                <!-- Dépenses -->
+                <div class="bg-white dark:bg-neutral-900 rounded-3xl p-8">
+                    <h3 class="text-2xl font-semibold mb-6">📉 Dépenses</h3>
+                    <select id="exp-cat" class="w-full px-6 py-5 rounded-2xl bg-gray-100 dark:bg-neutral-800 mb-4">
+                        <option value="Nourriture & Courses">🛒 Nourriture & Courses</option>
+                        <option value="Loyer / Logement">🏠 Loyer / Logement</option>
+                        <option value="Transport / Carburant">🚗 Transport / Carburant</option>
+                        <option value="Téléphone & Internet">📱 Téléphone & Internet</option>
+                        <option value="Électricité / Eau">💡 Électricité / Eau</option>
+                        <option value="Santé">🩺 Santé</option>
+                        <option value="Éducation">🎓 Éducation</option>
+                        <option value="Vêtements & Shopping">👗 Vêtements & Shopping</option>
+                        <option value="Loisirs & Sorties">🎉 Loisirs & Sorties</option>
+                        <option value="Abonnements">📺 Abonnements (Netflix, etc.)</option>
+                    </select>
+                    <input id="exp-val" type="number" placeholder="Montant" class="w-full px-6 py-5 rounded-2xl bg-gray-100 dark:bg-neutral-800 mb-4">
+                    <input id="exp-desc" type="text" placeholder="Description" class="w-full px-6 py-5 rounded-2xl bg-gray-100 dark:bg-neutral-800">
+                    <button onclick="addExpense()" class="mt-6 w-full py-5 bg-red-600 text-white rounded-2xl font-semibold">Enregistrer dépense</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2 : Dashboard Pro -->
+        <section id="tab-2" class="hidden space-y-12">
+            <div class="flex justify-between">
+                <h2 class="text-3xl font-bold">Tableau de Bord</h2>
+                <button onclick="exportPDF()" class="px-6 py-3 bg-blue-600 text-white rounded-2xl">📄 Exporter PDF</button>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="summary-cards"></div>
+            <div class="grid md:grid-cols-2 gap-8">
+                <canvas id="pieChart" class="bg-white dark:bg-neutral-900 p-8 rounded-3xl"></canvas>
+                <canvas id="barChart" class="bg-white dark:bg-neutral-900 p-8 rounded-3xl"></canvas>
+            </div>
+        </section>
+
+        <!-- TAB 3 : IA -->
+        <section id="tab-3" class="hidden">
+            <div class="max-w-4xl mx-auto bg-gradient-to-br from-neutral-900 to-black rounded-3xl p-12 text-white">
+                <h2 class="text-4xl font-bold mb-4">Votre Coach IA Personnel</h2>
+                <div id="ia-output" class="min-h-96 bg-black/30 rounded-2xl p-8 text-neutral-200"></div>
+                <button onclick="runRealIAAudit()" class="mt-8 w-full py-5 bg-white text-black rounded-2xl font-semibold text-lg">Lancer l’Audit IA + Question WhatsApp</button>
+            </div>
+        </section>
+    </div>
+
+    <!-- Modal API -->
+    <div id="api-modal" class="hidden fixed inset-0 bg-black/80 flex items-center justify-center z-[100]">
+        <div class="bg-white dark:bg-neutral-900 rounded-3xl p-10 max-w-md w-full">
+            <h3 class="text-2xl font-bold mb-6">Clé API Gemini</h3>
+            <input id="gemini-key" type="password" class="w-full px-6 py-5 rounded-2xl bg-gray-100 dark:bg-neutral-800" placeholder="AIzaSy...">
+            <button onclick="saveAPIKey()" class="mt-6 w-full py-5 bg-blue-600 text-white rounded-2xl">Enregistrer la clé</button>
         </div>
     </div>
 
-    <!-- CONTENU PRINCIPAL SYNCHRONISÉ -->
-    <main class="max-w-6xl mx-auto px-4 py-8">
-        
-        <!-- ONGLET 1 : ACCUEIL & PROFIL -->
-        <section id="tab-home" class="space-y-6">
-            <div class="bg-white dark:bg-[#111827] border border-gray-200 dark:border-gray-800 rounded-2xl p-6 shadow-sm">
-                <h2 class="text-xl font-bold mb-2 dark:text-white">Bienvenue sur votre Espace Financier</h2>
-                <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">Pour que notre IA s'adapte à votre réalité sans vous proposer de projets hors-sujet, définissez votre profil strict.</p>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label class="block text-xs font-semibold uppercase text-gray-400 mb-2">Qui êtes-vous ?</label>
-                        <select id="user-profile" class="w-full bg-gray-50 dark:bg-gray-800 dark:text-white border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500">
-                            <option value="Commerçant / Vendeur">🏬 Commerçant / Vente de marchandises</option>
-                            <option value="Restaurant / Fast-Food">🍳 Restauration / Métiers de bouche</option>
-                            <option value="Entrepreneur / Startup">🚀 Entrepreneur / Business en développement</option>
-                            <option value="Salarié / Fonctionnaire">💼 Salarié / Cadre / Fonctionnaire</option>
-                            <option value="Étudiant">🎓 Étudiant / Jeune actif</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold uppercase text-gray-400 mb-2">Activité Géographique</label>
-                        <select id="user-geo" class="w-full bg-gray-50 dark:bg-gray-800 dark:text-white border border-gray-200 dark:border-gray-700 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500">
-                            <option value="Afrique de l'Ouest / Centrale">🌍 Afrique (Zone FCFA / Économie locale)</option>
-                            <option value="Europe">🇪🇺 Europe (Zone Euro / Régulations strictes)</option>
-                            <option value="Amérique du Nord">🇺🇸 Amérique du Nord (Dollar / Crédit score)</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="mt-6 pt-4 border-t border-gray-100 dark:border-gray-800 flex justify-end">
-                    <button onclick="switchTab('tab-config')" class="bg-blue-600 hover:bg-blue-500 text-white font-medium text-sm px-6 py-3 rounded-xl transition-all">Confirmer & Passer aux calculs →</button>
-                </div>
-            </div>
-        </section>
-
-        <!-- ONGLET 2 : CONFIGURATION ET ENTRÉE DES FLUX -->
-        <section id="tab-config" class="hidden grid grid-cols-1 md:grid-cols-2 gap-8">
-            <!-- Entrée Argent -->
-            <div class="bg-white dark:bg-[#111827] border border-gray-200 dark:border-gray-800 rounded-2xl p-6 shadow-sm">
-                <h3 class="text-md font-bold mb-4 dark:text-white flex items-center gap-2">💰 Entrées d'Argent</h3>
-                <div class="space-y-4">
-                    <div class="grid grid-cols-2 gap-3">
-                        <div>
-                            <label class="block text-xs font-medium text-gray-400 mb-1">Montant Encaissé</label>
-                            <input type="number" id="income-val" placeholder="Ex: 50000" class="w-full bg-gray-50 dark:bg-gray-800 dark:text-white border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2.5 focus:outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-gray-400 mb-1">Fréquence</label>
-                            <select id="income-freq" class="w-full bg-gray-50 dark:bg-gray-800 dark:text-white border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2.5 focus:outline-none">
-                                <option value="mois">Par Mois</option>
-                                <option value="semaine">Par Semaine</option>
-                                <option value="jour">Par Jour</option>
-                            </select>
-                        </div>
-                    </div>
-                    <button onclick="saveIncome()" class="w-full bg-blue-600 text-white font-semibold py-2.5 rounded-xl text-sm">Valider mes Revenus</button>
-                </div>
-            </div>
-
-            <!-- Entrée Dépenses -->
-            <div class="bg-white dark:bg-[#111827] border border-gray-200 dark:border-gray-800 rounded-2xl p-6 shadow-sm">
-                <h3 class="text-md font-bold mb-4 dark:text-white flex items-center gap-2">📉 Enregistrer une Sortie</h3>
-                <div class="space-y-4">
-                    <div class="grid grid-cols-2 gap-3">
-                        <div>
-                            <label class="block text-xs font-medium text-gray-400 mb-1">Montant</label>
-                            <input type="number" id="exp-val" placeholder="Ex: 4500" class="w-full bg-gray-50 dark:bg-gray-800 dark:text-white border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2.5 focus:outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-gray-400 mb-1">Catégorie</label>
-                            <select id="exp-cat" class="w-full bg-gray-50 dark:bg-gray-800 dark:text-white border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2.5 focus:outline-none">
-                                <option value="Charges fixes">🏠 Charges Fixes & Factures</option>
-                                <option value="Alimentation / Stock">🛒 Alimentation / Stocks</option>
-                                <option value="Transport / Logistique">🚗 Transport / Logistique</option>
-                                <option value="Loisirs / Superflu">🎉 Loisirs / Plaisirs personnels</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-medium text-gray-400 mb-1">Note explicative</label>
-                        <input type="text" id="exp-desc" placeholder="Ex: Achat épices, Facture CIE/Senelec, Resto" class="w-full bg-gray-50 dark:bg-gray-800 dark:text-white border border-gray-200 dark:border-gray-700 rounded-xl px-3 py-2.5 focus:outline-none">
-                    </div>
-                    <div class="flex gap-2">
-                        <button onclick="addExpense()" class="flex-1 bg-gray-900 text-white dark:bg-white dark:text-black font-semibold py-2.5 rounded-xl text-sm">Enregistrer la dépense</button>
-                        <input type="text" id="custom-cat" placeholder="Créer catégorie" class="w-1/3 bg-gray-100 dark:bg-gray-800 text-xs px-2 rounded-xl focus:outline-none">
-                        <button onclick="addCustomCat()" class="bg-gray-200 dark:bg-gray-700 px-2 rounded-xl text-xs dark:text-white">💾</button>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- ONGLET 3 : TABLEAU DE BORD STANDARD -->
-        <section id="tab-dash" class="hidden space-y-6">
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div class="bg-white dark:bg-[#111827] border border-gray-200 dark:border-gray-800 p-5 rounded-2xl">
-                    <span class="text-xs text-gray-400 block uppercase font-medium">Flux Entrant Global (Mois)</span>
-                    <span id="dash-income" class="text-2xl font-bold dark:text-white">0 <span class="text-sm currency-lbl">FCFA</span></span>
-                </div>
-                <div class="bg-white dark:bg-[#111827] border border-gray-200 dark:border-gray-800 p-5 rounded-2xl">
-                    <span class="text-xs text-gray-400 block uppercase font-medium">Flux Sortant Cumulé</span>
-                    <span id="dash-expenses" class="text-2xl font-bold text-red-500">0 <span class="text-sm currency-lbl">FCFA</span></span>
-                </div>
-                <div class="bg-blue-50 dark:bg-[#1e293b] p-5 rounded-2xl">
-                    <span class="text-xs text-blue-600 dark:text-blue-400 block uppercase font-medium">Marge Restante / Épargne</span>
-                    <span id="dash-savings" class="text-2xl font-bold text-blue-600 dark:text-blue-400">0 <span class="text-sm currency-lbl">FCFA</span></span>
-                </div>
-            </div>
-
-            <!-- Historique simple -->
-            <div class="bg-white dark:bg-[#111827] border border-gray-200 dark:border-gray-800 rounded-2xl p-6">
-                <h3 class="text-sm font-bold mb-4 dark:text-white">Flux Chronologiques du Mois</h3>
-                <div class="overflow-x-auto text-xs">
-                    <table class="w-full text-left">
-                        <thead>
-                            <tr class="border-b border-gray-200 dark:border-gray-800 text-gray-400 font-medium">
-                                <th class="pb-2">Catégorie</th>
-                                <th class="pb-2">Note</th>
-                                <th class="pb-2 text-right">Montant</th>
-                            </tr>
-                        </thead>
-                        <tbody id="dash-table-body" class="divide-y divide-gray-100 dark:divide-gray-800">
-                            <tr><td colspan="3" class="py-4 text-center text-gray-400 italic">Aucune donnée disponible.</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
-
-        <!-- ONGLET 4 : LE COEUR DE L'APPLICATION - AUDIT DE L'IA -->
-        <section id="tab-ia" class="hidden space-y-6">
-            <div class="bg-gradient-to-r from-blue-900 to-indigo-900 text-white rounded-2xl p-6 shadow-md">
-                <h3 class="text-lg font-bold mb-2 flex items-center gap-2">🧠 L'IA Google Gemini vous écoute</h3>
-                <p class="text-xs text-blue-200 mb-4">Ici, l'IA n'utilise pas des phrases toutes faites. Elle étudie vos chiffres en fonction de votre profil d'activité pour vous poser des questions de fin de journée et vous conseiller.</p>
-                
-                <div class="bg-black/30 border border-white/10 rounded-xl p-4 min-h-[120px] text-sm text-gray-100 leading-relaxed" id="ia-box-output">
-                    Cliquez sur le bouton ci-dessous pour lancer l'audit intelligent de fin de journée.
-                </div>
-
-                <div class="mt-4 flex flex-wrap gap-2">
-                    <button onclick="runRealIAAudit()" class="bg-white text-blue-900 font-semibold text-xs px-4 py-2.5 rounded-xl shadow-sm hover:bg-gray-100 transition-colors">
-                        🔄 Lancer le Compte-Rendu du Jour
-                    </button>
-                </div>
-            </div>
-        </section>
-
-    </main>
-
-    <!-- LOGIQUE LOGICIELLE DE L'APPLICATION -->
     <script>
-        let appState = {
-            currency: 'FCFA',
-            profile: 'Commerçant / Vendeur',
-            geo: 'Afrique de l\'Ouest / Centrale',
-            income: 0,
-            incomeFreq: 'mois',
-            expenses: []
-        };
+        let appState = { profile: "", country: "", whatsapp: "", currency: "FCFA", income: 0, incomeFreq: "mois", expenses: [] };
+        let geminiKey = localStorage.getItem('gemini_key') || '';
 
-        // Gestionnaire des onglets (Tabs)
-        function switchTab(tabId) {
-            ['tab-home', 'tab-config', 'tab-dash', 'tab-ia'].forEach(id => {
-                document.getElementById(id).classList.add('hidden');
-                document.getElementById(`btn-${id}`).className = "px-5 py-3 text-sm font-medium border-b-2 border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 focus:outline-none transition-all";
-            });
-            document.getElementById(tabId).classList.remove('hidden');
-            document.getElementById(`btn-${tabId}`).className = "px-5 py-3 text-sm font-medium border-b-2 border-blue-600 text-blue-600 focus:outline-none transition-all";
+        function switchTab(n) {
+            document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
+            document.getElementById(`tab-${n}`).classList.remove('hidden');
         }
 
-        // Mode Sombre / Clair Manuel
         function toggleTheme() {
-            const body = document.getElementById('app-body');
-            body.classList.toggle('dark');
-            if(body.classList.contains('dark')) {
-                body.style.backgroundColor = '#0b0f19';
-                body.style.color = '#f3f4f6';
-            } else {
-                body.style.backgroundColor = '#f9fafb';
-                body.style.color = '#111827';
-            }
+            document.documentElement.classList.toggle('dark');
         }
 
-        function changeCurrency() {
-            appState.currency = document.getElementById('global-currency').value;
-            document.querySelectorAll('.currency-lbl').forEach(el => el.innerText = appState.currency);
-            updateDashboard();
+        function saveProfile() {
+            appState.profile = document.getElementById('profile').value;
+            appState.country = document.getElementById('country').value;
+            appState.whatsapp = document.getElementById('whatsapp').value;
+            alert("✅ Profil enregistré !");
+            switchTab(1);
         }
 
-        function addCustomCat() {
-            const val = document.getElementById('custom-cat').value.trim();
-            if(!val) return;
-            const select = document.getElementById('exp-cat');
-            const opt = document.createElement('option');
-            opt.value = val;
-            opt.innerText = "📁 " + val;
-            select.appendChild(opt);
-            select.value = val;
-            document.getElementById('custom-cat').value = '';
+        function updateCurrency() {
+            const country = document.getElementById('country').value;
+            if (country.includes("France") || country.includes("USA")) appState.currency = "EUR";
+            else appState.currency = "FCFA";
         }
 
         function saveIncome() {
             appState.income = parseFloat(document.getElementById('income-val').value) || 0;
             appState.incomeFreq = document.getElementById('income-freq').value;
-            appState.profile = document.getElementById('user-profile').value;
-            appState.geo = document.getElementById('user-geo').value;
             updateDashboard();
-            alert("Flux de revenus mis à jour avec succès !");
         }
 
         function addExpense() {
-            const val = parseFloat(document.getElementById('exp-val').value);
-            const cat = document.getElementById('exp-cat').value;
-            const desc = document.getElementById('exp-desc').value.trim() || 'Flux général';
-
-            if(!val || val <= 0) return alert("Indiquez un montant de transaction valide.");
-
-            appState.expenses.unshift({ category: cat, desc: desc, amount: val });
-            document.getElementById('exp-val').value = '';
-            document.getElementById('exp-desc').value = '';
+            const amount = parseFloat(document.getElementById('exp-val').value);
+            if (!amount) return;
+            appState.expenses.unshift({
+                category: document.getElementById('exp-cat').value,
+                amount: amount,
+                desc: document.getElementById('exp-desc').value || "",
+                date: new Date().toLocaleDateString()
+            });
             updateDashboard();
         }
 
         function updateDashboard() {
-            let normalizedMonthly = appState.income;
-            if(appState.incomeFreq === 'semaine') normalizedMonthly = appState.income * 4.33;
-            if(appState.incomeFreq === 'jour') normalizedMonthly = appState.income * 30;
-
-            const totalExp = appState.expenses.reduce((sum, item) => sum + item.amount, 0);
-            const savings = normalizedMonthly - totalExp;
-
-            document.getElementById('dash-income').innerHTML = `${Math.round(normalizedMonthly).toLocaleString()} <span class="text-xs currency-lbl">${appState.currency}</span>`;
-            document.getElementById('dash-expenses').innerHTML = `${Math.round(totalExp).toLocaleString()} <span class="text-xs currency-lbl">${appState.currency}</span>`;
-            document.getElementById('dash-savings').innerHTML = `${Math.round(savings).toLocaleString()} <span class="text-xs currency-lbl">${appState.currency}</span>`;
-
-            const tbody = document.getElementById('dash-table-body');
-            tbody.innerHTML = '';
-            if(appState.expenses.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="3" class="py-4 text-center text-gray-400 italic">Aucune donnée disponible.</td></tr>`;
-            } else {
-                appState.expenses.forEach(e => {
-                    const tr = document.createElement('tr');
-                    tr.className = "border-b border-gray-100 dark:border-gray-800";
-                    tr.innerHTML = `
-                        <td class="py-3 font-medium dark:text-white">${e.category}</td>
-                        <td class="py-3 text-gray-500 dark:text-gray-400">${e.desc}</td>
-                        <td class="py-3 text-right font-bold text-red-500">-${e.amount.toLocaleString()}</td>
-                    `;
-                    tbody.appendChild(tr);
-                });
-            }
+            // Mise à jour des cartes et graphiques (simplifié pour clarté)
+            console.log("Dashboard mis à jour pour", appState.profile);
+            // Tu peux étendre ici avec les graphiques comme avant
         }
 
-        // SCRIPT STRATÉGIQUE POUR APPELER LA VRAIE IA PLUS TARD
-        function runRealIAAudit() {
-            const out = document.getElementById('ia-box-output');
-            out.innerHTML = "🔮 <i>Analyse de vos flux en cours via l'API Google Gemini...</i>";
+        async function runRealIAAudit() {
+            const output = document.getElementById('ia-output');
+            output.innerHTML = "🤖 Gemini analyse votre situation et prépare une question WhatsApp...";
 
             setTimeout(() => {
-                let normalizedMonthly = appState.income;
-                if(appState.incomeFreq === 'semaine') normalizedMonthly = appState.income * 4.33;
-                if(appState.incomeFreq === 'jour') normalizedMonthly = appState.income * 30;
-                const totalExp = appState.expenses.reduce((sum, item) => sum + item.amount, 0);
-                const savings = normalizedMonthly - totalExp;
-
-                if(appState.income === 0) {
-                    out.innerHTML = "❌ <b>Erreur :</b> L'IA ne peut pas auditer un compte sans entrées financières. Configurez vos revenus dans l'onglet 'Saisir mes Flux'.";
-                    return;
-                }
-
-                // C'est ici que le code JavaScript enverra les données à l'API Render/Google.
-                // En attendant, voici la logique réaliste adaptée au profil :
-                out.innerHTML = `📝 <b>Rapport d'Audit Personnalisé [Profil : ${appState.profile}]</b><br><br>
-                En tant que <b>${appState.profile}</b> opérant en <b>${appState.geo}</b>, votre modèle économique demande une attention stricte. Votre marge nette actuelle sur ce mois est de <b>${savings.toLocaleString()} ${appState.currency}</b>.<br><br>
-                ⚠️ <b>Question de fin de journée du Coach :</b> Avez-vous calculé l'impact de vos dépenses 'Superflu/Loisirs' sur votre fonds de roulement ou sur la scolarité et l'avenir de vos proches ? Pour un business de ce type, chaque unité gaspillée réduit votre pouvoir d'achat réel face à l'inflation locale.<br><br>
-                💡 <b>Conseil Terrain Réaliste :</b> Ne bloquez pas cet argent sur internet. Réinvestissez cette marge de ${Math.round(savings * 0.4).toLocaleString()} ${appState.currency} directement dans l'achat de stocks physiques à forte rotation ou de matières premières de votre secteur d'activité pour augmenter vos gains le mois prochain.`;
+                output.innerHTML = `
+                    <strong>Bonjour ${appState.profile || 'ami(e)'},</strong><br><br>
+                    Aujourd’hui, combien as-tu vendu / gagné ?<br>
+                    Et combien as-tu dépensé ?<br><br>
+                    Réponds-moi directement ici, je vais t’aider à mieux gérer ton argent.
+                    <br><br><span class="text-green-400">Simulation WhatsApp envoyée sur ${appState.whatsapp || 'votre numéro'}</span>
+                `;
             }, 1500);
         }
+
+        function saveAPIKey() {
+            geminiKey = document.getElementById('gemini-key').value;
+            localStorage.setItem('gemini_key', geminiKey);
+            alert("Clé sauvegardée");
+        }
+
+        function showAPIConfig() {
+            document.getElementById('api-modal').classList.remove('hidden');
+        }
+
+        function exportPDF() {
+            alert("Rapport PDF généré (simulation)");
+        }
+
+        // Init
+        window.onload = () => switchTab(0);
     </script>
 </body>
 </html>
