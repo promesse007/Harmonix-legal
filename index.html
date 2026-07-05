@@ -338,7 +338,6 @@
     <button class="banner-cta" id="bannerCta" type="button">Voir le rapport complet</button>
   </div>
 
-  <!-- ===================== PAGE : ACCUEIL ===================== -->
   <section class="page active" data-page="home">
     <section class="metrics-grid" aria-label="Indicateurs principaux">
       <article class="metric featured">
@@ -372,7 +371,6 @@
     </div>
   </section>
 
-  <!-- ===================== PAGE : REVENUS ===================== -->
   <section class="page" data-page="income">
     <div class="section-title">
       <h2>Revenus</h2>
@@ -400,7 +398,6 @@
     </div>
   </section>
 
-  <!-- ===================== PAGE : DÉPENSES ===================== -->
   <section class="page" data-page="expenses">
     <div class="section-title">
       <h2>Nouvelle charge</h2>
@@ -451,7 +448,6 @@
     </div>
   </section>
 
-  <!-- ===================== PAGE : RAPPORT ===================== -->
   <section class="page" data-page="report">
     <div class="section-title"><h2>Répartition</h2><p>Lecture complète des postes</p></div>
     <div class="card"><div id="categoryBreakdown" class="progress-list"></div></div>
@@ -468,7 +464,6 @@
     </section>
   </section>
 
-  <!-- ===================== PAGE : PROFIL ===================== -->
   <section class="page" data-page="profile">
     <div class="section-title"><h2>Profil actif</h2><p>Catégories et conseil personnalisé</p></div>
     <div class="card">
@@ -836,9 +831,24 @@
   }
 
   function bindEvents(){
-    [dom.currencySelect, dom.incomeBase, dom.incomeMonthly, dom.incomeWeekly, dom.incomeDaily].forEach(el=>{
-      el.addEventListener("input", () => { syncIncomeFromInputs(); renderAll(); });
-      el.addEventListener("change", () => { syncIncomeFromInputs(); renderAll(); });
+    dom.currencySelect.addEventListener("change", () => {
+      syncIncomeFromInputs();
+      renderAll();
+    });
+
+    [dom.incomeBase, dom.incomeMonthly, dom.incomeWeekly, dom.incomeDaily].forEach(el => {
+      el.addEventListener("input", () => {
+        state.income.base = readNumber(dom.incomeBase);
+        state.income.monthly = readNumber(dom.incomeMonthly);
+        state.income.weekly = readNumber(dom.incomeWeekly);
+        state.income.daily = readNumber(dom.incomeDaily);
+        
+        const summary = calculateBudget();
+        renderMetrics(summary);
+        renderBreakdown(summary);
+        renderAudit(summary);
+        saveState();
+      });
     });
 
     dom.expenseForm.addEventListener("submit", (e) => {
