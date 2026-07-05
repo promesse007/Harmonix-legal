@@ -1,523 +1,627 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SmarTPlan . Pldanificateur de Vie & Budget</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="manifest.json" href="manifest.json"
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Smart Budget Africa Pro - Planificateur Universel</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="manifest" href="data:application/json,{}" />
     <style>
-        * { font-family: 'Inter', sans-serif; }
-        .fade-in { animation: fadeIn 0.3s ease-in-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        * { font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background: #0A0E1A; color: #FFFFFF; }
         .glass-card {
-            background: rgba(255, 255, 255, 0.7);
+            background: rgba(17, 24, 39, 0.75);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            border: 1px solid rgba(55, 65, 81, 0.4);
         }
-        .dark-glass {
-            background: rgba(15, 23, 42, 0.8);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(51, 65, 85, 0.4);
-        }
-        .gradient-text {
-            background: linear-gradient(135deg, #6366f1, #8b5cf6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        .transaction-item {
-            transition: all 0.2s ease;
-        }
-        .transaction-item:hover {
-            transform: translateX(4px);
-            border-color: #6366f1;
-        }
-        ::-webkit-scrollbar {
-            width: 4px;
-            height: 4px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #e2e8f0;
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #6366f1;
-            border-radius: 10px;
+        .glass-light {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
         input[type="number"]::-webkit-inner-spin-button,
-        input[type="number"]::-webkit-outer-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
+        input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type="number"] { -moz-appearance: textfield; }
+        .fade-in { animation: fadeIn 0.3s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+        .pulse-dot { animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+        .notif-badge {
+            animation: slideDown 0.4s ease-out;
         }
-        input[type="number"] {
-            -moz-appearance: textfield;
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: #1e293b; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 10px; }
+        .notification-toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 9999;
+            max-width: 400px;
+            animation: slideUp 0.5s ease-out;
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
-<body class="bg-gradient-to-br from-slate-50 via-indigo-50/30 to-purple-50/30 min-h-screen">
+<body>
 
-    <!-- En-tête -->
-    <header class="glass-card shadow-lg sticky top-0 z-50 border-b border-white/20">
-        <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-3">
-            <div class="flex items-center gap-3">
-                <div class="bg-gradient-to-br from-indigo-600 to-purple-600 p-2.5 rounded-xl shadow-lg shadow-indigo-500/20">
-                    <i class="fa-solid fa-wallet text-white text-xl"></i>
-                </div>
-                <div>
-                    <h1 class="text-xl font-extrabold text-slate-800">UniFinance <span class="gradient-text">Pro</span></h1>
-                    <p class="text-[10px] text-slate-500 font-medium uppercase tracking-wider">Gestion Universelle · Planification Intelligente</p>
-                </div>
+    <!-- NOTIFICATION TOAST CONTAINER -->
+    <div id="notification-container" class="notification-toast space-y-2"></div>
+
+    <!-- HEADER -->
+    <header class="sticky top-0 z-50 glass-card px-6 py-3 flex flex-wrap justify-between items-center gap-3 border-b border-gray-800/50">
+        <div class="flex items-center gap-3">
+            <div class="bg-gradient-to-br from-blue-600 to-indigo-600 p-2.5 rounded-xl shadow-lg shadow-blue-500/20">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                </svg>
             </div>
-            <div class="flex items-center gap-3">
-                <div class="flex items-center gap-2 bg-slate-100 px-3 py-1.5 rounded-full">
-                    <i class="fa-solid fa-globe text-slate-400 text-xs"></i>
-                    <span id="auto-geo" class="text-xs text-slate-600 font-medium">🌍 Détection...</span>
-                </div>
-                <select id="currency-select" onchange="updateCurrency()" class="bg-slate-100 border-0 rounded-full px-3 py-1.5 text-sm font-bold text-indigo-600 outline-none cursor-pointer">
-                    <option value="€">€ EUR</option>
-                    <option value="$">$ USD</option>
-                    <option value="£">£ GBP</option>
+            <div>
+                <h1 class="text-xl font-extrabold tracking-tight text-white">Smart Budget <span class="text-blue-500">Pro</span></h1>
+                <p id="live-clock" class="text-[11px] text-emerald-400 font-mono uppercase tracking-wider">Chargement...</p>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-3 flex-wrap">
+            <div class="flex items-center gap-2 bg-[#1E293B] p-1.5 rounded-xl border border-gray-700/60 text-xs">
+                <span id="auto-geo" class="text-gray-400 font-medium px-2">📍 Détection...</span>
+                <div class="w-px h-5 bg-gray-700"></div>
+                <select id="currency-select" onchange="calculateAll()" class="bg-transparent font-bold text-blue-400 outline-none cursor-pointer pr-1">
                     <option value="FCFA">FCFA</option>
+                    <option value="$">USD ($)</option>
+                    <option value="€">EUR (€)</option>
+                    <option value="£">GBP (£)</option>
                 </select>
-                <button onclick="resetApp()" class="text-sm text-rose-500 hover:text-rose-700 font-medium transition">
-                    <i class="fa-solid fa-rotate-right mr-1"></i> Réinitialiser
-                </button>
             </div>
+            <button onclick="toggleProfileModal()" class="text-xs bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-400 px-3 py-1.5 rounded-lg transition">
+                <i class="fa-regular fa-user"></i> Profil
+            </button>
         </div>
     </header>
 
     <main class="max-w-7xl mx-auto px-4 py-6 space-y-6">
 
-        <!-- Sélecteur de Profil -->
-        <section class="fade-in">
-            <div class="bg-white/80 backdrop-blur-sm p-4 rounded-2xl shadow-sm border border-slate-200/60">
-                <label class="block text-sm font-medium text-slate-600 mb-2">
-                    <i class="fa-regular fa-user mr-2"></i> Profil utilisateur (Adapte les catégories)
-                </label>
-                <select id="profileSelect" onchange="changeProfile()" class="w-full md:w-1/3 p-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none bg-white">
-                    <option value="etudiant">🎓 Étudiant</option>
-                    <option value="salarie">💼 Salarié</option>
-                    <option value="vendeur">🛒 Vendeur / Commerçant</option>
-                    <option value="business">📈 Entrepreneur</option>
-                    <option value="custom">⚙️ Personnalisé</option>
-                </select>
-            </div>
-        </section>
-
-        <!-- Tableau de bord amélioré -->
-        <section class="grid grid-cols-1 md:grid-cols-4 gap-4 fade-in">
-            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/60">
-                <p class="text-xs text-slate-500 font-medium uppercase tracking-wider">Solde Actuel</p>
-                <h2 id="balance" class="text-2xl font-extrabold text-slate-800 mt-1">0,00 €</h2>
-            </div>
-            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/60">
-                <p class="text-xs text-slate-500 font-medium uppercase tracking-wider">Revenus Totaux</p>
-                <h2 id="income" class="text-2xl font-extrabold text-emerald-600 mt-1">+0,00 €</h2>
-            </div>
-            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200/60">
-                <p class="text-xs text-slate-500 font-medium uppercase tracking-wider">Dépenses Totales</p>
-                <h2 id="expense" class="text-2xl font-extrabold text-rose-600 mt-1">-0,00 €</h2>
-            </div>
-            <div class="bg-gradient-to-br from-indigo-500 to-purple-600 p-5 rounded-2xl shadow-lg shadow-indigo-500/20">
-                <p class="text-xs text-white/80 font-medium uppercase tracking-wider">Épargne Nette</p>
-                <h2 id="savings" class="text-2xl font-extrabold text-white mt-1">0,00 €</h2>
-            </div>
-        </section>
-
-        <!-- Projections rapides -->
-        <section class="grid grid-cols-1 md:grid-cols-3 gap-4 fade-in">
-            <div class="bg-white/80 backdrop-blur-sm p-4 rounded-2xl border border-slate-200/60">
-                <p class="text-xs text-slate-500 font-medium">Projection 1 an</p>
-                <p id="proj-1" class="text-lg font-bold text-indigo-600 mt-1">0,00 €</p>
-            </div>
-            <div class="bg-white/80 backdrop-blur-sm p-4 rounded-2xl border border-slate-200/60">
-                <p class="text-xs text-slate-500 font-medium">Projection 3 ans</p>
-                <p id="proj-3" class="text-lg font-bold text-purple-600 mt-1">0,00 €</p>
-            </div>
-            <div class="bg-white/80 backdrop-blur-sm p-4 rounded-2xl border border-slate-200/60">
-                <p class="text-xs text-slate-500 font-medium">Projection 5 ans</p>
-                <p id="proj-5" class="text-lg font-bold text-rose-600 mt-1">0,00 €</p>
-            </div>
-        </section>
-
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            
-            <!-- Formulaire d'ajout -->
-            <div class="lg:col-span-1 fade-in">
-                <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-200/60 sticky top-24">
-                    <h3 class="text-lg font-bold mb-4 flex items-center gap-2 text-slate-800">
-                        <i class="fa-solid fa-plus-circle text-indigo-500"></i> Nouvelle Transaction
-                    </h3>
-                    <form id="transactionForm" class="space-y-4">
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-600 mb-1">Description</label>
-                            <input type="text" id="desc" placeholder="Ex: Courses, Salaire..." required class="w-full p-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm transition">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-600 mb-1">Montant</label>
-                            <input type="number" id="amount" step="0.01" placeholder="0.00" required class="w-full p-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm transition">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-600 mb-1">Catégorie</label>
-                            <select id="category" required class="w-full p-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm bg-white transition">
-                                <!-- Rempli par JS -->
-                            </select>
-                            <div class="mt-2 flex gap-2">
-                                <input type="text" id="newCategory" placeholder="Nouvelle catégorie..." class="flex-1 p-2.5 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition">
-                                <button type="button" onclick="addCustomCategory()" class="px-4 py-2.5 bg-slate-100 text-slate-700 rounded-xl text-sm font-medium hover:bg-slate-200 transition whitespace-nowrap">
-                                    <i class="fa-solid fa-plus mr-1"></i> Ajouter
-                                </button>
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-600 mb-1">Type</label>
-                            <div class="grid grid-cols-2 gap-2">
-                                <label class="cursor-pointer">
-                                    <input type="radio" name="type" value="income" class="peer sr-only">
-                                    <div class="text-center p-3 border-2 border-slate-200 rounded-xl peer-checked:border-emerald-500 peer-checked:bg-emerald-50 peer-checked:text-emerald-700 text-sm font-medium transition">
-                                        <i class="fa-solid fa-arrow-up mr-1"></i> Revenu
-                                    </div>
-                                </label>
-                                <label class="cursor-pointer">
-                                    <input type="radio" name="type" value="expense" class="peer sr-only" checked>
-                                    <div class="text-center p-3 border-2 border-slate-200 rounded-xl peer-checked:border-rose-500 peer-checked:bg-rose-50 peer-checked:text-rose-700 text-sm font-medium transition">
-                                        <i class="fa-solid fa-arrow-down mr-1"></i> Dépense
-                                    </div>
-                                </label>
-                            </div>
-                        </div>
-                        <button type="submit" class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-3.5 rounded-xl font-bold hover:from-indigo-700 hover:to-purple-700 transition shadow-lg shadow-indigo-500/25">
-                            <i class="fa-solid fa-check mr-2"></i> Ajouter
-                        </button>
-                    </form>
+        <!-- PROFIL CONFIGURATION MODAL -->
+        <div id="profile-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm hidden">
+            <div class="bg-[#1E293B] rounded-2xl p-6 max-w-lg w-full mx-4 border border-gray-700 shadow-2xl">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-bold text-white">⚙️ Configuration du Profil</h3>
+                    <button onclick="toggleProfileModal()" class="text-gray-400 hover:text-white">✕</button>
                 </div>
-            </div>
-
-            <!-- Liste des transactions & Analyse -->
-            <div class="lg:col-span-2 space-y-6">
-                <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-200/60">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-lg font-bold flex items-center gap-2 text-slate-800">
-                            <i class="fa-solid fa-list-ul text-indigo-500"></i> Historique
-                        </h3>
-                        <span id="transactionCount" class="text-xs text-slate-500 bg-slate-100 px-3 py-1 rounded-full font-medium">0 transaction</span>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-400 mb-1">Nom du profil</label>
+                        <input type="text" id="profile-name" placeholder="Ex: Entrepreneur, Étudiant..." class="w-full bg-[#0A0E1A] border border-gray-700 rounded-xl px-4 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/60" />
                     </div>
-                    <ul id="transactionList" class="space-y-2 max-h-[500px] overflow-y-auto pr-2">
-                        <li class="text-center text-slate-400 py-8 text-sm">Aucune transaction pour le moment.</li>
-                    </ul>
-                </div>
-
-                <!-- Analyse comportementale -->
-                <div class="bg-gradient-to-br from-slate-800 to-slate-900 p-6 rounded-2xl shadow-xl border border-slate-700/50">
-                    <h3 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2 mb-3">
-                        <i class="fa-solid fa-brain text-purple-400"></i> Analyse Comportementale
-                    </h3>
-                    <div id="coaching-feedback" class="text-sm leading-relaxed text-slate-300 bg-slate-800/50 border border-slate-700/50 rounded-xl p-4 min-h-[80px] flex items-start">
-                        <i class="fa-regular fa-lightbulb text-amber-400 mr-3 mt-0.5"></i>
-                        <span>Ajoutez vos transactions pour recevoir des conseils personnalisés.</span>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-400 mb-1">Catégories personnalisées (séparées par des virgules)</label>
+                        <input type="text" id="profile-categories" placeholder="Ex: Nourriture, Transport, Loyer..." class="w-full bg-[#0A0E1A] border border-gray-700 rounded-xl px-4 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/60" />
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-400 mb-1">Conseil personnalisé</label>
+                        <input type="text" id="profile-advice" placeholder="Ex: Optimisez vos charges fixes..." class="w-full bg-[#0A0E1A] border border-gray-700 rounded-xl px-4 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/60" />
+                    </div>
+                    <button onclick="saveProfile()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold py-2.5 rounded-xl transition">
+                        <i class="fa-regular fa-floppy-disk mr-2"></i> Enregistrer le profil
+                    </button>
+                    <div class="pt-2 border-t border-gray-700/50">
+                        <p class="text-[10px] text-gray-500">Profils prédéfinis :</p>
+                        <div class="flex flex-wrap gap-2 mt-2">
+                            <button onclick="loadPresetProfile('etudiant')" class="text-xs bg-gray-800 hover:bg-gray-700 text-gray-300 px-3 py-1 rounded-lg transition">🎓 Étudiant</button>
+                            <button onclick="loadPresetProfile('salarie')" class="text-xs bg-gray-800 hover:bg-gray-700 text-gray-300 px-3 py-1 rounded-lg transition">💼 Salarié</button>
+                            <button onclick="loadPresetProfile('commercant')" class="text-xs bg-gray-800 hover:bg-gray-700 text-gray-300 px-3 py-1 rounded-lg transition">🛒 Commerçant</button>
+                            <button onclick="loadPresetProfile('business')" class="text-xs bg-gray-800 hover:bg-gray-700 text-gray-300 px-3 py-1 rounded-lg transition">📈 Business</button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+
+        <!-- ÉTAPE 1 : REVENUS -->
+        <section class="glass-card rounded-2xl p-6 shadow-xl border border-gray-800/40">
+            <h2 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2 mb-4">
+                <span class="w-1.5 h-5 bg-emerald-500 rounded-full"></span> Étape 1 · Revenus Globaux
+            </h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-400 mb-1.5">Salaire / Bourse Mensuel</label>
+                    <div class="relative">
+                        <input type="number" id="inc-base-mois" oninput="calculateAll()" placeholder="0" class="w-full bg-[#1E293B] border border-gray-700 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/60" />
+                        <span class="absolute right-3 top-2.5 text-xs text-gray-500 font-bold lbl-currency">FCFA</span>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-400 mb-1.5">Gains Quotidiens</label>
+                    <div class="relative">
+                        <input type="number" id="inc-add-jour" oninput="calculateAll()" placeholder="0" class="w-full bg-[#1E293B] border border-gray-700 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/60" />
+                        <span class="absolute right-3 top-2.5 text-xs text-gray-500 font-bold lbl-currency">FCFA</span>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-400 mb-1.5">Gains Hebdomadaires</label>
+                    <div class="relative">
+                        <input type="number" id="inc-add-sem" oninput="calculateAll()" placeholder="0" class="w-full bg-[#1E293B] border border-gray-700 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/60" />
+                        <span class="absolute right-3 top-2.5 text-xs text-gray-500 font-bold lbl-currency">FCFA</span>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-400 mb-1.5">Autres Revenus Mensuels</label>
+                    <div class="relative">
+                        <input type="number" id="inc-add-mois" oninput="calculateAll()" placeholder="0" class="w-full bg-[#1E293B] border border-gray-700 rounded-xl px-4 py-2.5 text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/60" />
+                        <span class="absolute right-3 top-2.5 text-xs text-gray-500 font-bold lbl-currency">FCFA</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CORPS PRINCIPAL -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+            <!-- CONFIGURATEUR DE DÉPENSES -->
+            <aside class="lg:col-span-1 glass-card rounded-2xl p-5 shadow-xl border border-gray-800/40 space-y-4">
+                <h2 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                    <span class="w-1.5 h-5 bg-rose-500 rounded-full"></span> Étape 2 · Dépenses
+                </h2>
+
+                <div class="space-y-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-400 mb-1">Catégorie</label>
+                        <select id="exp-category" class="w-full bg-[#1E293B] border border-gray-700 rounded-xl px-3 py-2.5 text-xs text-white focus:outline-none focus:ring-2 focus:ring-blue-500/60">
+                            <!-- Rempli dynamiquement -->
+                        </select>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-400 mb-1">Montant</label>
+                            <input type="number" id="exp-amount" placeholder="0" class="w-full bg-[#1E293B] border border-gray-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:ring-2 focus:ring-blue-500/60" />
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-400 mb-1">Fréquence</label>
+                            <select id="exp-freq" class="w-full bg-[#1E293B] border border-gray-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:ring-2 focus:ring-blue-500/60">
+                                <option value="mois">Par Mois</option>
+                                <option value="semaine">Par Semaine</option>
+                                <option value="jour">Par Jour</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-400 mb-1">Note (optionnel)</label>
+                        <input type="text" id="exp-details" placeholder="Ex: Facture CIE..." class="w-full bg-[#1E293B] border border-gray-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:ring-2 focus:ring-blue-500/60" />
+                    </div>
+
+                    <button onclick="addExpense()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold py-2.5 rounded-xl text-sm transition shadow-md shadow-blue-600/20">
+                        <i class="fa-regular fa-plus mr-2"></i> Ajouter la charge
+                    </button>
+
+                    <div class="pt-2 border-t border-gray-800/40">
+                        <label class="block text-[11px] font-semibold text-gray-500 mb-1">Nouvelle catégorie</label>
+                        <div class="flex gap-2">
+                            <input type="text" id="custom-cat-input" placeholder="Ex: Élevage, Tontine..." class="flex-1 bg-[#1E293B] border border-gray-700 rounded-lg px-2 py-1.5 text-xs text-white focus:outline-none focus:ring-1 focus:ring-blue-500" />
+                            <button onclick="createCustomCategory()" class="bg-gray-700 hover:bg-gray-600 text-gray-200 text-xs px-3 py-1.5 rounded-lg transition">Ajouter</button>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- CONSOLE DE CALCULS -->
+            <div class="lg:col-span-2 space-y-5">
+
+                <!-- Horizons -->
+                <div class="grid grid-cols-3 gap-3">
+                    <div class="glass-card p-4 rounded-xl text-center border border-gray-800/40">
+                        <span class="text-[10px] text-gray-400 block uppercase font-bold">Revenu / Jour</span>
+                        <div id="horizon-day" class="text-base font-bold mt-1 text-white">0 <span class="text-[10px] lbl-currency">FCFA</span></div>
+                    </div>
+                    <div class="glass-card p-4 rounded-xl text-center border border-gray-800/40">
+                        <span class="text-[10px] text-gray-400 block uppercase font-bold">Revenu / Semaine</span>
+                        <div id="horizon-week" class="text-base font-bold mt-1 text-white">0 <span class="text-[10px] lbl-currency">FCFA</span></div>
+                    </div>
+                    <div class="glass-card p-4 rounded-xl text-center border border-blue-500/20 bg-blue-950/20">
+                        <span class="text-[10px] text-blue-400 block uppercase font-bold">Revenu / Mois</span>
+                        <div id="horizon-month" class="text-base font-bold mt-1 text-blue-400">0 <span class="text-[10px] lbl-currency">FCFA</span></div>
+                    </div>
+                </div>
+
+                <!-- Épargne Nette -->
+                <div class="bg-gradient-to-br from-[#111827] via-[#10221E] to-[#0D1F1A] border border-emerald-500/20 rounded-2xl p-5 flex flex-wrap justify-between items-center shadow-xl">
+                    <div>
+                        <span class="text-xs text-emerald-400 uppercase font-bold tracking-wider block">Épargne Nette Mensuelle</span>
+                        <p class="text-[11px] text-gray-400 mt-0.5">Ce qui reste après déduction des charges</p>
+                    </div>
+                    <div id="net-savings" class="text-2xl font-extrabold text-emerald-400">0 <span class="text-xs lbl-currency">FCFA</span></div>
+                </div>
+
+                <!-- Liste des charges -->
+                <div class="glass-card rounded-2xl p-5 border border-gray-800/40">
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="text-xs font-bold uppercase tracking-wider text-white">Charges enregistrées</h3>
+                        <button onclick="clearData()" class="text-[10px] text-rose-400 hover:underline transition">Tout effacer</button>
+                    </div>
+                    <div class="overflow-x-auto max-h-60 overflow-y-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead class="text-gray-500 font-bold uppercase border-b border-gray-800/40">
+                                <tr><th class="pb-2">Catégorie</th><th class="pb-2">Détails</th><th class="pb-2 text-right">Mensuel</th></tr>
+                            </thead>
+                            <tbody id="expenses-log" class="divide-y divide-gray-800/30">
+                                <tr><td colspan="3" class="py-4 text-center text-gray-500 italic">Aucune charge</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PROJECTIONS & AUDIT -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            <div class="glass-card rounded-2xl p-6 shadow-xl border border-gray-800/40 relative overflow-hidden">
+                <h3 class="text-sm font-bold text-white uppercase tracking-wider mb-4 flex items-center gap-2">
+                    🔮 Projections Patrimoniales
+                </h3>
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center p-3 bg-[#1E293B] rounded-xl border border-gray-700/50">
+                        <span class="text-xs text-gray-300 font-medium">Capital dans <b>1 an</b></span>
+                        <span id="proj-1" class="text-sm font-bold text-blue-400">0 FCFA</span>
+                    </div>
+                    <div class="flex justify-between items-center p-3 bg-[#1E293B] rounded-xl border border-gray-700/50">
+                        <span class="text-xs text-gray-300 font-medium">Capital dans <b>3 ans</b></span>
+                        <span id="proj-3" class="text-sm font-bold text-indigo-400">0 FCFA</span>
+                    </div>
+                    <div class="flex justify-between items-center p-3 bg-[#1E293B] rounded-xl border border-gray-700/50">
+                        <span class="text-xs text-gray-300 font-medium">Capital dans <b>5 ans</b></span>
+                        <span id="proj-5" class="text-sm font-bold text-purple-400">0 FCFA</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-card rounded-2xl p-6 shadow-xl border border-blue-500/20 relative overflow-hidden">
+                <h3 class="text-sm font-bold text-blue-400 uppercase tracking-wider mb-2 flex items-center gap-2">
+                    📊 Audit Comportemental
+                </h3>
+                <p class="text-[11px] text-gray-400 mb-3">Analyse algorithmique en temps réel</p>
+                <div id="coaching-feedback" class="text-xs leading-relaxed text-gray-300 bg-black/30 border border-gray-700/60 rounded-xl p-4 min-h-[115px] flex flex-col justify-center italic">
+                    Ajoutez vos revenus et charges pour activer l'audit.
+                </div>
+            </div>
+        </div>
+
     </main>
 
     <script>
-        // ===================== ÉTAT CENTRAL =====================
-        let state = {
-            currency: '€',
-            transactions: [],
-            categories: [],
-            profile: 'etudiant'
+        // ===================== CONFIGURATION & PROFILS =====================
+        const PRESET_PROFILES = {
+            etudiant: { name: 'Étudiant', categories: ['📚 Scolarité', '🍲 Restauration', '📱 Internet', '🚌 Transport', '🎉 Loisirs'], advice: 'Optimise tes charges fixes pour garder une marge sur tes loisirs.' },
+            salarie: { name: 'Salarié', categories: ['🏠 Loyer', '🛒 Courses', '⚡ Factures', '🚗 Transport', '🩺 Santé', '🎉 Loisirs'], advice: 'Automatise ton épargne dès le début du mois.' },
+            commercant: { name: 'Commerçant', categories: ['📦 Achat Stock', '🚚 Livraison', '⚡ Électricité Boutique', '🏷️ Taxes', '📊 Comptabilité'], advice: 'Sépare strictement ton fonds de roulement de tes bénéfices personnels.' },
+            business: { name: 'Entrepreneur', categories: ['📈 Marketing', '💻 Logiciels', '👔 Salaires', '🏢 Bureau', '📊 Conseil'], advice: 'Réinvestis au moins 30% de tes bénéfices dans la croissance.' }
         };
 
-        // ===================== PROFILS =====================
-        const defaultCategories = {
-            etudiant: ['Bourse / Aides', 'Cafétéria', 'Livres & Fournitures', 'Loyer', 'Sorties & Loisirs', 'Transport'],
-            salarie: ['Salaire', 'Loyer / Prêt', 'Courses alimentaires', 'Factures', 'Transport', 'Épargne', 'Loisirs'],
-            vendeur: ['Ventes journalières', 'Achats marchandises', 'Loyer boutique', 'Transport', 'Emballages', 'Frais divers'],
-            business: ['Chiffre d\'affaires', 'Salaires', 'Marketing & Pub', 'Logiciels & SaaS', 'Frais de déplacement', 'Impôts', 'Investissements'],
-            custom: []
+        let userProfile = {
+            name: 'Personnalisé',
+            categories: ['🏠 Logement', '🛒 Nourriture', '⚡ Électricité', '🚗 Transport', '🩺 Santé', '🎉 Loisirs'],
+            advice: 'Surveille tes petites dépenses pour maximiser ton épargne.'
         };
+
+        // ===================== ÉTAT CENTRAL =====================
+        const state = {
+            currency: 'FCFA',
+            incBaseMois: 0,
+            incAddJour: 0,
+            incAddSem: 0,
+            incAddMois: 0,
+            expenses: [],
+            lastNotification: null
+        };
+
+        // ===================== NOTIFICATIONS =====================
+        function sendNotification(title, message, type = 'info') {
+            const container = document.getElementById('notification-container');
+            const colors = {
+                info: 'bg-blue-600/90 border-blue-500',
+                success: 'bg-emerald-600/90 border-emerald-500',
+                warning: 'bg-amber-600/90 border-amber-500',
+                danger: 'bg-rose-600/90 border-rose-500'
+            };
+
+            const toast = document.createElement('div');
+            toast.className = `glass-card ${colors[type]} rounded-xl p-4 border shadow-lg notif-badge`;
+            toast.innerHTML = `
+                <div class="flex items-start gap-3">
+                    <div class="flex-1">
+                        <h4 class="text-sm font-bold text-white">${title}</h4>
+                        <p class="text-xs text-gray-200">${message}</p>
+                    </div>
+                    <button onclick="this.parentElement.parentElement.remove()" class="text-gray-400 hover:text-white text-sm">✕</button>
+                </div>
+            `;
+            container.appendChild(toast);
+
+            // Auto-remove after 5s
+            setTimeout(() => {
+                if (toast.parentElement) toast.remove();
+            }, 5000);
+
+            // Browser notification if permitted
+            if ('Notification' in window && Notification.permission === 'granted') {
+                new Notification(title, { body: message, icon: 'https://cdn-icons-png.flaticon.com/512/3067/3067424.png' });
+            }
+        }
+
+        function requestNotificationPermission() {
+            if ('Notification' in window && Notification.permission === 'default') {
+                Notification.requestPermission();
+            }
+        }
+
+        // ===================== HORLOGE =====================
+        function updateClock() {
+            const now = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const dateStr = now.toLocaleDateString('fr-FR', options);
+            const timeStr = now.toLocaleTimeString('fr-FR');
+            document.getElementById('live-clock').innerText = `📅 ${dateStr} · ⏰ ${timeStr}`;
+        }
+        setInterval(updateClock, 1000);
 
         // ===================== PERSISTANCE =====================
         function saveState() {
-            try {
-                localStorage.setItem('unifinance_state', JSON.stringify({
-                    transactions: state.transactions,
-                    categories: state.categories,
-                    profile: state.profile,
-                    currency: state.currency
-                }));
-            } catch (_) {}
+            state.currency = document.getElementById('currency-select').value;
+            state.incBaseMois = parseFloat(document.getElementById('inc-base-mois').value) || 0;
+            state.incAddJour = parseFloat(document.getElementById('inc-add-jour').value) || 0;
+            state.incAddSem = parseFloat(document.getElementById('inc-add-sem').value) || 0;
+            state.incAddMois = parseFloat(document.getElementById('inc-add-mois').value) || 0;
+            
+            const fullState = { ...state, profile: userProfile };
+            localStorage.setItem('smartbudget_pro_data', JSON.stringify(fullState));
         }
 
         function loadState() {
             try {
-                const raw = localStorage.getItem('unifinance_state');
-                if (raw) {
-                    const parsed = JSON.parse(raw);
-                    state.transactions = parsed.transactions || [];
-                    state.categories = parsed.categories || [];
-                    state.profile = parsed.profile || 'etudiant';
-                    state.currency = parsed.currency || '€';
-                }
-            } catch (_) {}
-            
-            // Si pas de catégories, charger celles du profil
-            if (state.categories.length === 0) {
-                state.categories = defaultCategories[state.profile] || defaultCategories['etudiant'];
-            }
-        }
-
-        // ===================== INIT =====================
-        function init() {
-            loadState();
-            document.getElementById('currency-select').value = state.currency;
-            document.getElementById('profileSelect').value = state.profile;
-            
-            // Détection automatique du fuseau
-            try {
-                const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-                document.getElementById('auto-geo').innerHTML = `🌍 ${tz}`;
-            } catch (_) {
-                document.getElementById('auto-geo').innerHTML = '🌍 Connecté';
-            }
-            
-            renderCategories();
-            updateDashboard();
-            renderTransactions();
-            updateProjections();
-            updateCoaching();
+                const raw = localStorage.getItem('smartbudget_pro_data');
+                if (!raw) return;
+                const parsed = JSON.parse(raw);
+                Object.assign(state, parsed);
+                if (parsed.profile) userProfile = parsed.profile;
+                
+                document.getElementById('currency-select').value = state.currency;
+                document.getElementById('inc-base-mois').value = state.incBaseMois || '';
+                document.getElementById('inc-add-jour').value = state.incAddJour || '';
+                document.getElementById('inc-add-sem').value = state.incAddSem || '';
+                document.getElementById('inc-add-mois').value = state.incAddMois || '';
+            } catch (e) { console.error('Erreur de chargement', e); }
         }
 
         // ===================== PROFIL =====================
-        function changeProfile() {
-            const profile = document.getElementById('profileSelect').value;
-            state.profile = profile;
-            state.categories = [...defaultCategories[profile]];
-            saveState();
-            renderCategories();
-            updateDashboard();
+        function toggleProfileModal() {
+            const modal = document.getElementById('profile-modal');
+            modal.classList.toggle('hidden');
+            if (!modal.classList.contains('hidden')) {
+                document.getElementById('profile-name').value = userProfile.name || '';
+                document.getElementById('profile-categories').value = userProfile.categories.join(', ');
+                document.getElementById('profile-advice').value = userProfile.advice || '';
+            }
         }
 
-        function addCustomCategory() {
-            const input = document.getElementById('newCategory');
-            const newCat = input.value.trim();
-            if (newCat && !state.categories.includes(newCat)) {
-                state.categories.push(newCat);
-                saveState();
-                renderCategories();
-                input.value = '';
-            }
+        function saveProfile() {
+            const name = document.getElementById('profile-name').value.trim() || 'Personnalisé';
+            const categoriesStr = document.getElementById('profile-categories').value.trim();
+            const advice = document.getElementById('profile-advice').value.trim();
+            
+            userProfile.name = name;
+            userProfile.categories = categoriesStr ? categoriesStr.split(',').map(c => c.trim()) : ['🏠 Logement', '🛒 Nourriture'];
+            userProfile.advice = advice || 'Surveille tes petites dépenses.';
+            
+            renderCategories();
+            toggleProfileModal();
+            saveState();
+            sendNotification('✅ Profil enregistré', `Profil "${name}" configuré avec ${userProfile.categories.length} catégories.`, 'success');
+            calculateAll();
+        }
+
+        function loadPresetProfile(key) {
+            const preset = PRESET_PROFILES[key];
+            if (!preset) return;
+            userProfile.name = preset.name;
+            userProfile.categories = preset.categories;
+            userProfile.advice = preset.advice;
+            
+            document.getElementById('profile-name').value = userProfile.name;
+            document.getElementById('profile-categories').value = userProfile.categories.join(', ');
+            document.getElementById('profile-advice').value = userProfile.advice;
+            
+            renderCategories();
+            saveState();
+            sendNotification('📋 Profil chargé', `Profil "${preset.name}" activé avec ${preset.categories.length} catégories.`, 'info');
+            calculateAll();
         }
 
         function renderCategories() {
-            const select = document.getElementById('category');
-            select.innerHTML = state.categories.map(cat => `<option value="${cat}">${cat}</option>`).join('');
+            const select = document.getElementById('exp-category');
+            select.innerHTML = userProfile.categories.map(cat => `<option value="${cat}">${cat}</option>`).join('');
         }
 
-        // ===================== DEVISE =====================
-        function updateCurrency() {
-            state.currency = document.getElementById('currency-select').value;
-            saveState();
-            updateDashboard();
-            renderTransactions();
-            updateProjections();
+        // ===================== CATÉGORIES PERSONNALISÉES =====================
+        function createCustomCategory() {
+            const val = document.getElementById('custom-cat-input').value.trim();
+            if (!val) return;
+            if (!userProfile.categories.includes(val)) {
+                userProfile.categories.push(val);
+                renderCategories();
+                document.getElementById('custom-cat-input').value = '';
+                saveState();
+                sendNotification('📁 Nouvelle catégorie', `"${val}" ajoutée à vos catégories.`, 'info');
+            }
         }
 
-        function formatMoney(amount) {
-            const symbol = state.currency === '€' ? '€' : 
-                          state.currency === '$' ? '$' : 
-                          state.currency === '£' ? '£' : 'FCFA';
-            const formatted = amount.toFixed(2).replace('.', ',');
-            return `${formatted} ${symbol}`;
-        }
+        // ===================== AJOUT DE DÉPENSE =====================
+        function addExpense() {
+            const amount = parseFloat(document.getElementById('exp-amount').value);
+            const category = document.getElementById('exp-category').value;
+            const freq = document.getElementById('exp-freq').value;
+            const details = document.getElementById('exp-details').value.trim() || 'Charge courante';
 
-        // ===================== TRANSACTIONS =====================
-        document.getElementById('transactionForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const desc = document.getElementById('desc').value.trim();
-            const amount = parseFloat(document.getElementById('amount').value);
-            const category = document.getElementById('category').value;
-            const type = document.querySelector('input[name="type"]:checked').value;
-
-            if (!desc || isNaN(amount) || amount <= 0) {
-                alert('Veuillez remplir tous les champs correctement.');
+            if (!amount || amount <= 0) {
+                sendNotification('⚠️ Erreur', 'Veuillez entrer un montant valide.', 'warning');
                 return;
             }
 
-            const transaction = {
-                id: Date.now(),
-                desc,
-                amount,
-                category,
-                type,
-                date: new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' })
-            };
-
-            state.transactions.unshift(transaction);
+            state.expenses.unshift({ category, amount, freq, details, id: Date.now() });
+            document.getElementById('exp-amount').value = '';
+            document.getElementById('exp-details').value = '';
+            
             saveState();
+            calculateAll();
             
-            updateDashboard();
-            renderTransactions();
-            updateProjections();
-            updateCoaching();
-            
-            this.reset();
-            document.querySelector('input[name="type"][value="expense"]').checked = true;
-        });
-
-        function deleteTransaction(id) {
-            state.transactions = state.transactions.filter(t => t.id !== id);
-            saveState();
-            updateDashboard();
-            renderTransactions();
-            updateProjections();
-            updateCoaching();
-        }
-
-        // ===================== TABLEAU DE BORD =====================
-        function updateDashboard() {
-            const income = state.transactions.filter(t => t.type === 'income').reduce((acc, t) => acc + t.amount, 0);
-            const expense = state.transactions.filter(t => t.type === 'expense').reduce((acc, t) => acc + t.amount, 0);
-            const balance = income - expense;
-
-            document.getElementById('income').textContent = `+${formatMoney(income)}`;
-            document.getElementById('expense').textContent = `-${formatMoney(expense)}`;
-            document.getElementById('balance').textContent = formatMoney(balance);
-            document.getElementById('savings').textContent = formatMoney(balance);
-            
-            const balanceEl = document.getElementById('balance');
-            balanceEl.className = `text-2xl font-extrabold mt-1 ${balance >= 0 ? 'text-slate-800' : 'text-rose-600'}`;
-        }
-
-        // ===================== LISTE =====================
-        function renderTransactions() {
-            const list = document.getElementById('transactionList');
-            const count = document.getElementById('transactionCount');
-            count.textContent = `${state.transactions.length} transaction${state.transactions.length > 1 ? 's' : ''}`;
-
-            if (state.transactions.length === 0) {
-                list.innerHTML = '<li class="text-center text-slate-400 py-8 text-sm">Aucune transaction pour le moment.</li>';
-                return;
-            }
-
-            list.innerHTML = state.transactions.map(t => `
-                <li class="transaction-item flex justify-between items-center p-4 bg-slate-50 rounded-xl border border-slate-200/60 hover:border-indigo-300 transition group">
-                    <div class="flex items-center gap-4">
-                        <div class="w-10 h-10 rounded-full flex items-center justify-center ${t.type === 'income' ? 'bg-emerald-100 text-emerald-600' : 'bg-rose-100 text-rose-600'}">
-                            <i class="fa-solid ${t.type === 'income' ? 'fa-arrow-up' : 'fa-arrow-down'}"></i>
-                        </div>
-                        <div>
-                            <p class="font-semibold text-slate-800">${t.desc}</p>
-                            <p class="text-xs text-slate-500">${t.category} • ${t.date}</p>
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-4">
-                        <span class="font-bold ${t.type === 'income' ? 'text-emerald-600' : 'text-rose-600'}">
-                            ${t.type === 'income' ? '+' : '-'}${formatMoney(t.amount)}
-                        </span>
-                        <button onclick="deleteTransaction(${t.id})" class="text-slate-300 hover:text-rose-500 transition opacity-0 group-hover:opacity-100">
-                            <i class="fa-solid fa-trash-alt"></i>
-                        </button>
-                    </div>
-                </li>
-            `).join('');
-        }
-
-        // ===================== PROJECTIONS =====================
-        function updateProjections() {
-            const income = state.transactions.filter(t => t.type === 'income').reduce((acc, t) => acc + t.amount, 0);
-            const expense = state.transactions.filter(t => t.type === 'expense').reduce((acc, t) => acc + t.amount, 0);
-            const monthlySavings = (income - expense) / 30; // Approximatif
-
-            const proj1 = monthlySavings > 0 ? monthlySavings * 365 : 0;
-            const proj3 = monthlySavings > 0 ? monthlySavings * 365 * 3 : 0;
-            const proj5 = monthlySavings > 0 ? monthlySavings * 365 * 5 : 0;
-
-            document.getElementById('proj-1').textContent = formatMoney(proj1);
-            document.getElementById('proj-3').textContent = formatMoney(proj3);
-            document.getElementById('proj-5').textContent = formatMoney(proj5);
-        }
-
-        // ===================== COACHING =====================
-        function updateCoaching() {
-            const feedback = document.getElementById('coaching-feedback');
-            const total = state.transactions.length;
-            
-            if (total === 0) {
-                feedback.innerHTML = `
-                    <i class="fa-regular fa-lightbulb text-amber-400 mr-3 mt-0.5"></i>
-                    <span>Ajoutez vos transactions pour recevoir des conseils personnalisés.</span>
-                `;
-                return;
-            }
-
-            const income = state.transactions.filter(t => t.type === 'income').reduce((acc, t) => acc + t.amount, 0);
-            const expense = state.transactions.filter(t => t.type === 'expense').reduce((acc, t) => acc + t.amount, 0);
-            const balance = income - expense;
-            const savingsRate = income > 0 ? (balance / income) * 100 : 0;
-
-            let message = '';
-            let icon = 'fa-regular fa-lightbulb';
-            let color = 'text-amber-400';
-
-            if (balance < 0) {
-                icon = 'fa-solid fa-triangle-exclamation';
-                color = 'text-rose-400';
-                message = `🚨 <b>Déficit critique :</b> Vos dépenses dépassent vos revenus de ${formatMoney(Math.abs(balance))}. Réduisez vos charges non essentielles (loisirs, abonnements) et augmentez vos revenus.`;
-            } else if (savingsRate > 30) {
-                icon = 'fa-solid fa-star';
-                color = 'text-emerald-400';
-                message = `🌟 <b>Excellence financière !</b> Vous épargnez ${Math.round(savingsRate)}% de vos revenus. Avec ce rythme, vous construisez un capital solide. Utilisez-le pour investir dans des actifs productifs.`;
-            } else if (savingsRate > 15) {
-                icon = 'fa-regular fa-circle-check';
-                color = 'text-blue-400';
-                message = `✅ <b>Bonne gestion :</b> Vous épargnez ${Math.round(savingsRate)}% de vos revenus. Continuez à optimiser vos dépenses pour atteindre 30% d'épargne.`;
-            } else if (savingsRate > 0) {
-                icon = 'fa-regular fa-clock';
-                color = 'text-purple-400';
-                message = `⏳ <b>Marge d'amélioration :</b> Votre épargne est à ${Math.round(savingsRate)}%. Identifiez les petites dépenses récurrentes pour booster votre épargne.`;
-            } else {
-                icon = 'fa-regular fa-face-meh';
-                color = 'text-slate-400';
-                message = `⚖️ <b>Équilibre précaire :</b> Vous dépensez presque tout ce que vous gagnez. Essayez de réduire de 10% vos dépenses mensuelles.`;
-            }
-
-            feedback.innerHTML = `
-                <i class="${icon} ${color} mr-3 mt-0.5"></i>
-                <span>${message}</span>
-            `;
+            sendNotification('✅ Charge ajoutée', `${category}: ${amount} ${state.currency} (${freq})`, 'success');
         }
 
         // ===================== RÉINITIALISATION =====================
-        function resetApp() {
-            if (confirm('⚠️ Voulez-vous vraiment effacer toutes vos données ?')) {
-                localStorage.removeItem('unifinance_state');
-                state.transactions = [];
-                state.categories = [];
-                state.profile = 'etudiant';
-                state.currency = '€';
-                document.getElementById('currency-select').value = '€';
-                document.getElementById('profileSelect').value = 'etudiant';
-                state.categories = defaultCategories['etudiant'];
-                saveState();
-                renderCategories();
-                updateDashboard();
-                renderTransactions();
-                updateProjections();
-                updateCoaching();
-            }
+        function clearData() {
+            if (!confirm('⚠️ Effacer toutes vos données ?')) return;
+            state.expenses = [];
+            state.incBaseMois = 0;
+            state.incAddJour = 0;
+            state.incAddSem = 0;
+            state.incAddMois = 0;
+            document.getElementById('inc-base-mois').value = '';
+            document.getElementById('inc-add-jour').value = '';
+            document.getElementById('inc-add-sem').value = '';
+            document.getElementById('inc-add-mois').value = '';
+            saveState();
+            calculateAll();
+            sendNotification('🗑️ Réinitialisation', 'Toutes vos données ont été effacées.', 'danger');
         }
 
-        // ===================== LANCEMENT =====================
-        document.addEventListener('DOMContentLoaded', init);
+        // ===================== MOTEUR DE CALCUL =====================
+        function calculateAll() {
+            saveState();
+            const currency = state.currency;
+
+            const totalMonthlyIncome = state.incBaseMois + (state.incAddJour * 30) + (state.incAddSem * 4.33) + state.incAddMois;
+
+            document.getElementById('horizon-day').innerHTML = `${Math.round(totalMonthlyIncome / 30).toLocaleString()} <span class="text-[10px]">${currency}</span>`;
+            document.getElementById('horizon-week').innerHTML = `${Math.round(totalMonthlyIncome / 4.33).toLocaleString()} <span class="text-[10px]">${currency}</span>`;
+            document.getElementById('horizon-month').innerHTML = `${Math.round(totalMonthlyIncome).toLocaleString()} <span class="text-[10px]">${currency}</span>`;
+
+            let totalMonthlyExpenses = 0;
+            const tbody = document.getElementById('expenses-log');
+            tbody.innerHTML = '';
+
+            if (state.expenses.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="3" class="py-4 text-center text-gray-500 italic">Aucune charge</td></tr>`;
+            } else {
+                state.expenses.forEach(e => {
+                    let costMois = e.amount;
+                    if (e.freq === 'semaine') costMois = e.amount * 4.33;
+                    if (e.freq === 'jour') costMois = e.amount * 30;
+                    totalMonthlyExpenses += costMois;
+
+                    const tr = document.createElement('tr');
+                    tr.className = 'border-b border-gray-800/20 hover:bg-gray-800/10 transition-colors fade-in';
+                    tr.innerHTML = `
+                        <td class="py-2.5 font-medium text-white">${e.category}</td>
+                        <td class="py-2.5 text-gray-400">${e.details}</td>
+                        <td class="py-2.5 text-right font-semibold text-rose-400">-${Math.round(costMois).toLocaleString()} ${currency}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+
+            const finalSavings = totalMonthlyIncome - totalMonthlyExpenses;
+            document.getElementById('net-savings').innerHTML = `${Math.round(finalSavings).toLocaleString()} <span class="text-xs">${currency}</span>`;
+            document.querySelectorAll('.lbl-currency').forEach(el => el.innerText = currency);
+
+            // Projections
+            const cap1An = finalSavings > 0 ? finalSavings * 12 : 0;
+            const cap3Ans = finalSavings > 0 ? finalSavings * 12 * 3 : 0;
+            const cap5Ans = finalSavings > 0 ? finalSavings * 12 * 5 : 0;
+
+            document.getElementById('proj-1').innerText = `${Math.round(cap1An).toLocaleString()} ${currency}`;
+            document.getElementById('proj-3').innerText = `${Math.round(cap3Ans).toLocaleString()} ${currency}`;
+            document.getElementById('proj-5').innerText = `${Math.round(cap5Ans).toLocaleString()} ${currency}`;
+
+            // AUDIT COMPORTEMENTAL
+            const feedback = document.getElementById('coaching-feedback');
+            if (totalMonthlyIncome === 0) {
+                feedback.className = 'text-xs leading-relaxed text-gray-300 bg-black/30 border border-gray-700/60 rounded-xl p-4 italic';
+                feedback.innerHTML = '💡 Ajoutez vos revenus pour activer l\'audit personnalisé.';
+                return;
+            }
+
+            let diagnosticHTML = '';
+            const savingsRate = (finalSavings / totalMonthlyIncome) * 100;
+
+            if (finalSavings < 0) {
+                feedback.className = 'text-xs leading-relaxed text-rose-300 bg-rose-950/20 border border-rose-500/30 rounded-xl p-4';
+                diagnosticHTML = `🚨 <b>DÉFICIT CRITIQUE :</b> Vos charges dépassent vos revenus de <b>${Math.abs(Math.round(finalSavings)).toLocaleString()} ${currency}</b>. Action immédiate requise.`;
+            } else {
+                feedback.className = 'text-xs leading-relaxed text-gray-200 bg-gray-900/50 border border-gray-700/60 rounded-xl p-4 space-y-2';
+                
+                if (savingsRate >= 35) {
+                    diagnosticHTML += `🌟 <b>EXCELLENCE :</b> Vous épargnez ${Math.round(savingsRate)}% de vos revenus. Profil financier solide.<br/>`;
+                } else if (savingsRate >= 15) {
+                    diagnosticHTML += `⚖️ <b>ÉQUILIBRE :</b> Épargne de ${Math.round(savingsRate)}%, structure financière saine.<br/>`;
+                } else {
+                    diagnosticHTML += `⚠️ <b>VULNÉRABLE :</b> Épargne inférieure à 15%, optimisez vos charges.<br/>`;
+                }
+
+                // Analyse des catégories
+                const categoriesMap = {};
+                state.expenses.forEach(e => {
+                    let cost = e.amount;
+                    if (e.freq === 'semaine') cost *= 4.33;
+                    if (e.freq === 'jour') cost *= 30;
+                    categoriesMap[e.category] = (categoriesMap[e.category] || 0) + cost;
+                });
+
+                const sorted = Object.entries(categoriesMap).sort((a, b) => b[1] - a[1]);
+                if (sorted.length > 0) {
+                    const top = sorted[0];
+                    const pct = (top[1] / totalMonthlyIncome) * 100;
+                    diagnosticHTML += `📊 <b>Poste dominant :</b> "${top[0]}" représente ${Math.round(pct)}% de vos revenus.<br/>`;
+                }
+
+                // Conseils personnalisés du profil
+                if (userProfile.advice) {
+                    diagnosticHTML += `💡 <b>Conseil :</b> ${userProfile.advice}`;
+                }
+            }
+            feedback.innerHTML = diagnosticHTML;
+        }
+
+        // ===================== INITIALISATION =====================
+        document.addEventListener('DOMContentLoaded', () => {
+            loadState();
+            renderCategories();
+            updateClock();
+            requestNotificationPermission();
+            
+            try {
+                const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+                document.getElementById('auto-geo').innerText = `📍 ${tz}`;
+            } catch (_) {
+                document.getElementById('auto-geo').innerText = '📍 Connecté';
+            }
+            
+            calculateAll();
+
+            // Notification de bienvenue
+            setTimeout(() => {
+                sendNotification('👋 Bienvenue sur Smart Budget Pro', 'Configurez votre profil et commencez à planifier vos finances.', 'info');
+            }, 1000);
+        });
     </script>
 </body>
 </html>
